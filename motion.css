@@ -1,0 +1,389 @@
+/*
+  UPI story motion layer.
+  Follows the oil-motion runtime rules: every effect is classified by how input controls time
+  (autonomous · scrub · segment-play). Hidden start states only apply under html.motion, which is
+  set in <head> when the viewer has not asked for reduced motion. Without it the page is static.
+*/
+:root {
+  --motion-fast: 180ms;
+  --motion-base: 420ms;
+  --motion-slow: 760ms;
+  --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --motion-rise: 18px;
+}
+
+/* ---------- Scroll progress (scrub: page scroll → bar width) ---------- */
+.scroll-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--color-background-primary, var(--brand));
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+html:not(.motion) .scroll-progress {
+  display: none;
+}
+
+/* ---------- Section nav: current location (UI state) ---------- */
+.topbar nav > a {
+  position: relative;
+  transition: color var(--motion-fast) ease;
+}
+.topbar nav > a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--motion-base) var(--motion-ease-out);
+}
+.topbar nav > a[aria-current="location"] {
+  color: var(--ink);
+}
+.topbar nav > a[aria-current="location"]::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Hero (autonomous on load, then scrub as it leaves) ---------- */
+/* Opacity is owned by the hero; per-layer parallax uses `translate` (entrances own `transform`). */
+.motion .hero {
+  opacity: calc(1 - var(--hp, 0) * 0.85);
+}
+.motion .hero > *:not(.hero-depth) {
+  animation: motion-rise var(--motion-slow) var(--motion-ease-out) both;
+}
+.motion .hero > .eyebrow {
+  animation-delay: 60ms;
+}
+.motion .hero > h1 {
+  animation-delay: 140ms;
+}
+.motion .hero > .dek {
+  animation-delay: 320ms;
+}
+.motion .hero > .scroll-cue {
+  animation-delay: 460ms;
+}
+.motion .scroll-cue span {
+  display: inline-block;
+  animation: motion-nudge 1.8s var(--motion-ease-in-out) 1.6s 3;
+}
+
+@keyframes motion-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--motion-rise), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes motion-nudge {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+/* ---------- Reveal on enter (event → plays once) ---------- */
+.motion [data-reveal] {
+  transition:
+    opacity var(--motion-slow) var(--motion-ease-out),
+    transform var(--motion-slow) var(--motion-ease-out);
+  transition-delay: calc(var(--d, 0) * 90ms);
+}
+.motion [data-reveal]:not(.is-in) {
+  opacity: 0;
+  transform: translate3d(0, var(--motion-rise), 0);
+}
+.motion .stat-band [data-reveal]:not(.is-in) {
+  transform: translate3d(0, 10px, 0);
+}
+
+/* ---------- Trend chart ---------- */
+/* scrub: chart position in viewport → how much of Apr 2020…Oct 2026 is drawn */
+.motion .trend-line,
+.motion .trend-area {
+  clip-path: inset(-12px calc((1 - var(--reveal, 1)) * 100% - 12px) -12px -12px);
+}
+/* segment-play: axis labels settle in after a metric switch while the line morphs */
+.chart-wrap.is-morphing .axis-label {
+  animation: motion-fade var(--motion-base) ease both;
+}
+.chart-wrap.is-morphing .tooltip {
+  visibility: hidden;
+}
+@keyframes motion-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Segmented control: sliding selection pill (UI state) */
+.segmented.has-indicator {
+  position: relative;
+}
+.segmented.has-indicator button {
+  position: relative;
+  z-index: 1;
+  transition: color var(--motion-fast) ease;
+}
+.segmented.has-indicator button.active {
+  background: transparent;
+  box-shadow: none;
+}
+.seg-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: var(--w, 0);
+  transform: translateX(var(--x, 0));
+  background: var(--white);
+  border-radius: 9px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+.motion .seg-indicator.is-live {
+  transition:
+    transform var(--motion-base) var(--motion-ease-out),
+    width var(--motion-base) var(--motion-ease-out);
+}
+
+/* ---------- Ratio bars (scrub: section position → bar length, staggered) ---------- */
+.motion .ratio-row i {
+  transition: none;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--grow, 0));
+}
+
+/* ---------- Editorial figures: small window opens to full stage (scrub) ---------- */
+.motion .editorial-figure picture {
+  overflow: hidden;
+}
+.motion .editorial-figure img {
+  transform: scale(calc(1.06 - var(--open, 1) * 0.06));
+  transform-origin: 50% 60%;
+}
+
+/* ---------- Checks table rows ---------- */
+.motion .checks-table tbody tr {
+  transition: background-color var(--motion-fast) ease;
+}
+.checks-table tbody tr:hover {
+  background: var(--color-background-subtle, #f4f2ec);
+}
+
+/* ---------- Chart preview dialog (event) ---------- */
+.motion .svg-dialog[open] {
+  animation: motion-dialog var(--motion-base) var(--motion-ease-out) both;
+}
+.motion .svg-dialog[open]::backdrop {
+  animation: motion-fade var(--motion-base) ease both;
+}
+@keyframes motion-dialog {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Static fallbacks ---------- */
+@media print {
+  .motion [data-reveal],
+  .motion .hero,
+  .motion .hero > * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .motion .trend-line,
+  .motion .trend-area {
+    clip-path: none;
+  }
+  .motion .ratio-row i {
+    transform: none;
+  }
+  .scroll-progress {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seg-indicator,
+  .topbar nav > a::after {
+    transition: none !important;
+  }
+}
+
+/* =====================================================================
+   Reference-inspired layer (red scroll site): masked word headlines,
+   curtain panels, hairlines that draw, timeline rows that light up.
+   ===================================================================== */
+
+/* Masked word headlines — each word rises out of its own slot */
+.w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.02em 0.1em;
+  margin: 0 -0.02em -0.1em;
+}
+.w > span {
+  display: inline-block;
+}
+.motion .w > span {
+  transform: translate3d(0, 110%, 0);
+  transition: transform 900ms var(--motion-ease-out);
+  transition-delay: calc(80ms + var(--i, 0) * 55ms);
+}
+.motion .is-in .w > span {
+  transform: none;
+}
+.motion .hero > h1 {
+  animation: none;
+}
+.motion .hero h1 .w > span {
+  transform: none;
+  animation: motion-word 1000ms var(--motion-ease-out) both;
+  animation-delay: calc(160ms + var(--i, 0) * 70ms);
+}
+@keyframes motion-word {
+  from {
+    transform: translate3d(0, 110%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* Curtain panel — dark section opens from an inset card to full bleed while scrolling in */
+.motion .comparison {
+  clip-path: inset(
+    calc(var(--wipe, 0) * 7%) calc(var(--wipe, 0) * 4%) 0 round calc(var(--wipe, 0) * 40px)
+  );
+}
+.motion .comparison .comparison-grid {
+  transform: translate3d(0, calc(var(--wipe, 0) * 40px), 0);
+}
+
+/* Editorial figures — revealed by a rising curtain rather than a fade */
+.motion .editorial-figure[data-reveal] {
+  transition:
+    clip-path 1s var(--motion-ease-out),
+    opacity 0.6s ease;
+}
+.motion .editorial-figure[data-reveal]:not(.is-in) {
+  transform: none;
+  opacity: 0.4;
+  clip-path: inset(22% 0 0 0 round 24px);
+}
+.motion .editorial-figure[data-reveal].is-in {
+  clip-path: inset(0 0 0 0 round 24px);
+}
+
+/* Hairlines draw left → right when their block enters */
+.motion [data-line] {
+  border-top-color: transparent;
+  background-image: linear-gradient(var(--line), var(--line));
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 0 1px;
+  transition: background-size 1.2s var(--motion-ease-in-out);
+}
+.motion [data-line].is-in {
+  background-size: 100% 1px;
+}
+
+/* Twelve-check list — the row crossing the middle of the screen lights up */
+.motion .checks-table tbody tr td {
+  transition:
+    background-color var(--motion-base) ease,
+    box-shadow var(--motion-base) ease;
+}
+.motion .checks-table tbody tr.is-active td {
+  background: color-mix(in srgb, var(--brand) 7%, var(--white));
+}
+.motion .checks-table tbody tr.is-active td:first-child {
+  box-shadow: inset 3px 0 0 var(--brand);
+  color: var(--brand-dark);
+}
+
+@media print {
+  .motion .w > span,
+  .motion .hero h1 .w > span {
+    transform: none !important;
+    animation: none !important;
+  }
+  .motion .comparison,
+  .motion .editorial-figure[data-reveal] {
+    clip-path: none !important;
+  }
+  .motion .comparison .comparison-grid {
+    transform: none;
+  }
+  .motion [data-line] {
+    border-top-color: var(--line);
+    background: none;
+  }
+}
+
+/* Split word wrappers must not pick up the page's `.hero h1 span` emphasis colour */
+.hero h1 .w,
+.hero h1 .w > span {
+  color: inherit;
+}
+
+/* Chrome ignores the hidden attribute on SVG <g>; keep the hover marker hidden until pointermove */
+#trendChart [hidden] {
+  display: none;
+}
+
+/* =====================================================================
+   Parallax layer (cinematic-scroll · editorial-story recipe, reference: red scroll site)
+   One scroll clock in motion.js writes --s / --depth; `translate` is the parallax owner,
+   so entrance `transform` animations never fight it. Reading text barely moves;
+   decorative planes (giant figures, the ghost data curve) carry the depth.
+   ===================================================================== */
+
+/* Panels after the hero sit above it, so they slide over the slower hero (curtain over) */
+.motion main > section:not(.hero){position:relative;z-index:1}
+.motion .story,.motion .recent,.motion .conclusion,.motion .method{background-color:var(--paper);box-shadow:0 0 0 100vmax var(--paper);clip-path:inset(0 -100vmax)}
+
+/* Hero planes: far figure → data curve → text */
+.hero{position:relative;isolation:isolate}
+.hero-depth{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:visible}
+.hero-curve{position:absolute;left:0;right:0;bottom:4%;width:100%;height:58%;overflow:visible}
+.hero-curve polyline{fill:none;stroke:color-mix(in srgb,var(--brand) 30%,transparent);stroke-width:2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.motion .hero-depth{animation:motion-fade 1400ms ease 500ms both}
+.motion .hero-curve{translate:0 calc(var(--s,0) * .32px)}
+.motion .hero > *:not(.hero-depth){translate:0 calc(var(--s,0) * .12px)}
+
+.depth-host{position:relative;isolation:isolate}
+
+/* Mid plane: the evidence card floats slightly faster than its reading column */
+.motion .ratio-card,.motion .chart-card{translate:0 var(--depth,0px)}
+
+@media print{
+  .hero-curve,.hero>*,.ratio-card,.chart-card{translate:none!important}
+}

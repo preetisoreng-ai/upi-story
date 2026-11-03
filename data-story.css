@@ -1,0 +1,577 @@
+/*
+  UPI data story — scroll-revealed insights.
+  Palette and type follow the reference video (as requested, an explicit exception to the
+  NucliOS colours): black stage, lavender + lime marks, white disc, heavy geometric numerals,
+  uppercase labels, underlined place names, a small serif signature.
+
+  Interaction (oil-motion "segment playback", one gesture = one step):
+  - the left text column scrolls and snaps one insight per swipe (scroll-snap, no skipping);
+  - the right visual column stays fixed; the active visual dissolves in, the previous one out;
+  - each insight's animation then plays on its own to the final number (time-driven),
+    both scrolling down and back up. Reduced motion shows final states with no dissolve.
+*/
+:root {
+  --ink: #000;
+  --paper: #fff;
+  --lav: #8c7cff;
+  --lime: #c6e48b;
+  --muted: #9a9a9a;
+  --hair: #1d1d1d;
+  --bar-h: 72px;
+  --gutter: max(24px, calc((100vw - 1180px) / 2));
+  --display: "Archivo", Graphik, Inter, Arial, sans-serif;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  background: var(--ink);
+  color-scheme: dark;
+  scroll-padding-top: var(--bar-h);
+}
+/* Without JS, native snapping gives the one-insight-per-screen rhythm; with JS the step handler does. */
+html:not(.js) {
+  scroll-snap-type: y mandatory;
+}
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--display);
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--lav);
+  outline-offset: 3px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Reading progress under the shared top bar */
+.progress {
+  position: fixed;
+  top: var(--bar-h);
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 30;
+  pointer-events: none;
+}
+.progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--lav), var(--lime));
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  transition: transform 0.6s var(--ease-out);
+}
+
+/* ---------- Layout: scrolling text column + fixed visual stage ---------- */
+.story {
+  display: grid;
+  grid-template-columns: minmax(260px, 40%) minmax(0, 1fr);
+  column-gap: clamp(24px, 4vw, 72px);
+  padding: 0 var(--gutter);
+}
+.steps {
+  grid-column: 1;
+  grid-row: 1;
+}
+.step {
+  height: calc(100svh - var(--bar-h));
+  display: flex;
+  align-items: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always; /* one swipe = one insight, never two */
+}
+.viz {
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  top: var(--bar-h);
+  height: calc(100svh - var(--bar-h));
+  align-self: start;
+}
+html:not(.js) .viz {
+  display: none;
+}
+
+/* ---------- Copy ---------- */
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  padding: clamp(24px, 4vh, 48px) 0;
+}
+.copy > * {
+  margin: 0;
+}
+/* Text of the active insight settles in; others rest dimmed while they scroll past */
+.motion .copy > * {
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.8s var(--ease-out);
+}
+.motion .step:not(.is-active) .copy > * {
+  opacity: 0.18;
+  transform: translateY(14px);
+}
+.motion .step.is-active .copy > *:nth-child(2) {
+  transition-delay: 0.06s;
+}
+.motion .step.is-active .copy > *:nth-child(3) {
+  transition-delay: 0.12s;
+}
+.motion .step.is-active .copy > *:nth-child(4) {
+  transition-delay: 0.18s;
+}
+.motion .step.is-active .copy > *:nth-child(5) {
+  transition-delay: 0.24s;
+}
+
+.kicker {
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 600;
+  line-height: 1;
+}
+.place {
+  color: var(--lav);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.16em;
+}
+.display {
+  font-weight: 850;
+  font-stretch: 112%;
+  font-size: clamp(44px, 5.4vw, 92px);
+  line-height: 0.9;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+}
+.display .o {
+  display: inline-block;
+  width: 0.72em;
+  height: 0.72em;
+  margin: 0 0.03em;
+  border-radius: 50%;
+  vertical-align: -0.03em;
+  background: conic-gradient(from 200deg, var(--lime), var(--lav), var(--lime));
+}
+.lede {
+  font-size: clamp(18px, 1.7vw, 24px);
+  font-weight: 650;
+}
+.label {
+  font-size: clamp(20px, 2vw, 30px);
+  font-weight: 500;
+  line-height: 1.2;
+}
+.big {
+  font-weight: 850;
+  font-stretch: 108%;
+  font-size: clamp(68px, 8.4vw, 128px);
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+  font-variant-numeric: normal;
+}
+.caps {
+  text-transform: uppercase;
+  font-weight: 850;
+  font-stretch: 112%;
+  font-size: clamp(26px, 3vw, 46px);
+  line-height: 1;
+  letter-spacing: 0.005em;
+}
+.caps-xl {
+  font-size: clamp(30px, 3.6vw, 56px);
+}
+.small {
+  font-size: 13px;
+  font-weight: 650;
+  margin-top: 6px !important;
+}
+.lavender {
+  color: var(--lav);
+}
+.lime {
+  color: var(--lime);
+}
+.statement {
+  font-size: clamp(22px, 2.3vw, 34px);
+  font-weight: 550;
+  line-height: 1.22;
+  max-width: 18ch;
+}
+.small-statement {
+  max-width: 26ch;
+  font-size: clamp(18px, 1.8vw, 26px);
+}
+.statement .sw {
+  transition: opacity 0.3s ease;
+}
+.statement .sw.dim {
+  opacity: 0.22;
+}
+.note {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 38ch;
+}
+.scroll-cue {
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.scroll-cue span {
+  display: inline-block;
+  margin-left: 6px;
+  animation: nudge 1.6s ease-in-out infinite;
+}
+@keyframes nudge {
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+/* Mini line chart in the copy column */
+.mini {
+  margin: 6px 0 0;
+  width: 100%;
+  max-width: 360px;
+}
+.mini svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.mini .ln {
+  fill: none;
+  stroke: var(--lav);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mini .pt {
+  fill: var(--lav);
+}
+.mini .val {
+  fill: var(--lav);
+  font: 700 9px var(--display);
+  text-anchor: middle;
+}
+.mini .yr {
+  fill: var(--paper);
+  font: 700 9px var(--display);
+  text-anchor: middle;
+}
+
+/* Text swap inside the shares insight (first year → last 12 months) */
+.swap {
+  display: grid;
+}
+.swap-state {
+  grid-area: 1 / 1;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s var(--ease-out);
+}
+.swap-state > * {
+  margin: 0;
+}
+.state-b {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.swap.is-b .state-a {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.swap.is-b .state-b {
+  opacity: 1;
+  transform: none;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px !important;
+}
+.links a {
+  display: inline-block;
+  padding: 11px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 750;
+  text-decoration: none;
+  background: var(--lime);
+  color: var(--ink);
+}
+.links a + a {
+  background: transparent;
+  color: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--lav);
+}
+.links a:hover {
+  filter: brightness(1.08);
+}
+
+/* ---------- Visual stage: stacked items, dissolve between them ---------- */
+.viz-item {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vh, 40px) 0;
+  opacity: 0;
+  visibility: hidden;
+  filter: blur(16px);
+  transform: scale(0.94);
+  transition:
+    opacity 0.75s ease,
+    filter 0.75s ease,
+    transform 0.9s var(--ease-out),
+    visibility 0s linear 0.9s;
+}
+.viz-item.is-active {
+  opacity: 1;
+  visibility: visible;
+  filter: blur(0);
+  transform: none;
+  transition:
+    opacity 0.75s ease 0.12s,
+    filter 0.75s ease 0.12s,
+    transform 0.9s var(--ease-out) 0.12s,
+    visibility 0s;
+}
+/* The outgoing visual drifts the opposite way to the incoming one */
+.viz-item.leave-up {
+  transform: scale(1.05) translateY(-3%);
+}
+.viz-item.leave-down {
+  transform: scale(1.05) translateY(3%);
+}
+.viz-item > svg {
+  width: 100%;
+  height: 100%;
+  max-width: min(100%, 74svh);
+  max-height: min(74svh, 700px);
+  overflow: visible;
+}
+
+.signature {
+  position: fixed;
+  left: var(--gutter);
+  bottom: 24px;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.05;
+  font-weight: 500;
+  opacity: 0.9;
+  pointer-events: none;
+}
+.signature em {
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Gradient number panel (lime glow from the top over lavender) */
+.panel {
+  --reveal: 1;
+  --glow: 1;
+  position: relative;
+  width: min(100%, 58svh);
+  aspect-ratio: 4 / 5;
+  max-height: 74svh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  background: var(--lav);
+  color: var(--ink);
+  overflow: hidden;
+  clip-path: inset(calc((1 - var(--reveal)) * 100%) 0 0 0);
+}
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: -10% -20% auto;
+  height: 75%;
+  background: radial-gradient(
+    60% 70% at 50% 0%,
+    var(--lime) 0%,
+    var(--lime) 35%,
+    rgba(198, 228, 139, 0) 100%
+  );
+  transform-origin: 50% 0;
+  transform: scaleY(var(--glow));
+  opacity: var(--glow);
+}
+.panel > * {
+  position: relative;
+  margin: 0;
+}
+.panel-number {
+  font-weight: 850;
+  font-stretch: 104%;
+  font-size: clamp(56px, 7.4vw, 116px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+.panel-caption {
+  margin-top: 12px !important;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.dots-visual .axis-label {
+  position: absolute;
+  left: 0;
+  margin: 0;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 11px;
+  font-weight: 650;
+}
+.axis-top {
+  top: 16%;
+  color: var(--lav);
+}
+.axis-bottom {
+  bottom: 16%;
+  color: var(--lime);
+}
+.disc-caption {
+  position: absolute;
+  bottom: 3%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.foot {
+  scroll-snap-align: end;
+  padding: 40px var(--gutter) 56px;
+  border-top: 1px solid var(--hair);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.foot p {
+  max-width: 900px;
+  margin: 0;
+}
+
+/* ---------- Narrow screens: fixed visual on top, text snaps beneath it ---------- */
+@media (max-width: 760px) {
+  :root {
+    --viz-h: 46svh;
+  }
+  html {
+    scroll-padding-top: calc(var(--bar-h) + var(--viz-h));
+  }
+  .story {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0 16px;
+  }
+  .viz {
+    grid-column: 1;
+    grid-row: 1;
+    height: var(--viz-h);
+    z-index: 2;
+    background: var(--ink);
+  }
+  .steps {
+    grid-row: 2;
+  }
+  .step {
+    height: calc(100svh - var(--bar-h) - var(--viz-h));
+    align-items: flex-start;
+  }
+  .copy {
+    gap: 8px;
+    padding: 12px 0;
+  }
+  .signature,
+  .scroll-cue,
+  .dots-visual .axis-label {
+    display: none;
+  }
+  .display {
+    font-size: clamp(36px, 11vw, 56px);
+  }
+  .big {
+    font-size: clamp(48px, 15vw, 72px);
+  }
+  .label,
+  .statement {
+    font-size: 20px;
+  }
+  .note {
+    font-size: 13px;
+  }
+  .mini {
+    max-width: 260px;
+  }
+  .viz-item > svg {
+    max-height: calc(var(--viz-h) - 24px);
+  }
+  .panel {
+    width: min(100%, 34svh);
+  }
+}
+
+/* Reduced motion: snapping stays (it is navigation), dissolves and staggers go */
+@media (prefers-reduced-motion: reduce) {
+  .viz-item,
+  .viz-item.is-active,
+  .copy > *,
+  .swap-state,
+  .progress span {
+    transition: none !important;
+  }
+  .viz-item {
+    filter: none;
+    transform: none;
+  }
+  .scroll-cue span {
+    animation: none;
+  }
+}
+@media print {
+  html {
+    scroll-snap-type: none;
+  }
+  .progress,
+  .scroll-cue,
+  .viz {
+    display: none;
+  }
+  .step {
+    height: auto;
+    break-inside: avoid;
+  }
+}

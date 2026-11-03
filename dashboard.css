@@ -1,0 +1,1091 @@
+/*
+  UPI dashboard — NucliOS / Bento V2.0 tokens only (../data-viz-theme/tokens/nuclios.css),
+  UPI brand mode (html.brand-upi: story blue, lime accent, warm paper neutrals).
+  Plain-HTML mirrors of the NucliOS components (TopNav, Breadcrumb, Tabs tone="brand",
+  Dropdown header="inline" variant="filled", Button, KpiCard, ChartCard, DataTable, Pagination)
+  so this static, build-free project matches the documented dashboard pattern.
+*/
+
+/* ---------- Chart series colours (brand-upi) ----------
+   Validated with the dataviz skill's validate_palette.js (lightness band, chroma, CVD ΔE,
+   normal-vision floor, contrast vs surface) — all PASS.
+   Light on Background/neutral #ffffff: UPI primary-600 #4056d6 (story brand blue) + orange-700.
+   Dark on Background/neutral #33322f: UPI primary-400 #7a8ae5 + an orange between steps 600/700
+   (no single orange step lands inside the dark lightness band 0.48–0.67).
+   The story's lime (#c7f36b, Secondary/300) is too light for a 2px series; it stays an accent. */
+.theme-nuclios {
+  --series-1: var(--nuclios-primary-600);
+  --series-2: var(--nuclios-orange-700);
+  --chart-grid: var(--color-border-subtle);
+  --chart-ref: var(--color-border-neutral);
+  --chart-axis: var(--color-text-neutral-muted);
+  --page-gutter: max(16px, var(--layout-balanced-margin));
+}
+.theme-nuclios.dark {
+  --series-1: var(--nuclios-primary-400);
+  --series-2: #d96a0c;
+}
+
+/* Story typography: the story renders Graphik → Inter → Arial with 600-weight headings and
+   tight tracking. Arial has no 500, so "-medium" type styles would fall back to regular; lift them
+   to the story's 600 and tighten the display sizes. */
+.theme-nuclios.brand-upi [class*="-medium"] { font-weight: 600; }
+.page-title h1 { letter-spacing: -0.03em; }
+.kpi-value { letter-spacing: -0.03em; }
+
+* {
+  box-sizing: border-box;
+}
+html {
+  background: var(--color-background-subtle);
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-background-subtle);
+  color: var(--color-text-neutral);
+  font-family: var(--font-family-graphik);
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--color-text-link);
+}
+a:hover {
+  color: var(--color-text-link-hover);
+}
+:focus-visible {
+  outline: 2px solid var(--color-border-primary-focused, var(--color-border-primary));
+  outline-offset: 2px;
+}
+.muted {
+  color: var(--color-text-neutral-muted);
+}
+.icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  padding: var(--spacing-s) var(--spacing-l);
+  background: var(--color-background-primary);
+  color: var(--color-text-onprimary);
+  border-radius: var(--radius-component-set-1);
+  z-index: 100;
+}
+.skip-link:focus {
+  top: 8px;
+}
+code {
+  font-family: var(--type-code-small-regular-family, monospace);
+}
+
+/* ---------- TopNav ---------- */
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4xl);
+  height: 56px;
+  padding: 0 var(--page-gutter);
+  background: var(--color-background-neutral);
+  border-bottom: var(--border-width-regular) solid var(--color-border-subtle);
+}
+.topnav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  color: var(--color-text-neutral);
+  text-decoration: none;
+}
+.topnav-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-container-set-2);
+  background: var(--color-background-primary);
+  color: var(--color-text-onprimary);
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+}
+.topnav-links {
+  display: flex;
+  gap: var(--spacing-2xs);
+  margin-left: auto;
+}
+.topnav-links a {
+  padding: var(--spacing-xs) var(--spacing-m);
+  border-radius: var(--radius-component-set-1);
+  color: var(--color-text-neutral-muted);
+  text-decoration: none;
+}
+.topnav-links a:hover {
+  background: var(--color-background-neutral-hover);
+  color: var(--color-text-neutral);
+}
+.topnav-links a[aria-current="page"] {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-background-primary-muted);
+}
+
+/* ---------- Buttons (NucliOS Button: filled / border / ghost / link) ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  height: 36px;
+  padding: 0 var(--spacing-2xl);
+  border: var(--border-width-regular) solid transparent;
+  border-radius: var(--radius-component-set-1);
+  background: transparent;
+  color: var(--color-text-neutral);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.btn-filled {
+  background: var(--color-background-primary);
+  color: var(--color-text-onprimary);
+}
+.btn-filled:hover {
+  background: var(--color-background-primary-hover);
+}
+.btn-filled:active {
+  background: var(--color-background-primary-pressed);
+}
+.btn-border {
+  border-color: var(--color-border-primary);
+  color: var(--color-text-primary);
+}
+.btn-border:hover {
+  background: var(--color-background-primary-muted);
+}
+.btn-ghost {
+  color: var(--color-icons-neutral-subtle);
+}
+.btn-ghost:hover {
+  background: var(--color-background-neutral-hover);
+}
+.btn-link {
+  padding: 0 var(--spacing-s);
+  color: var(--color-text-link);
+}
+.btn-link:hover {
+  text-decoration: underline;
+}
+.btn-icon {
+  width: 36px;
+  padding: 0;
+}
+.btn:disabled {
+  color: var(--color-text-neutral-disabled);
+  cursor: not-allowed;
+  background: transparent;
+}
+#themeToggle .icon {
+  width: 18px;
+  height: 18px;
+}
+#themeToggle .icon-sun,
+.dark #themeToggle .icon-moon {
+  display: none;
+}
+.dark #themeToggle .icon-sun {
+  display: block;
+}
+
+/* ---------- Page ---------- */
+.page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--spacing-4xl) var(--page-gutter) 48px;
+}
+.breadcrumb ol {
+  display: flex;
+  gap: var(--spacing-s);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-neutral-muted);
+}
+.breadcrumb a {
+  color: var(--color-text-neutral-muted);
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  color: var(--color-text-neutral);
+  text-decoration: underline;
+}
+.breadcrumb [aria-current="page"] {
+  color: var(--color-text-primary);
+}
+.page-title {
+  margin: var(--spacing-s) 0 var(--spacing-2xl);
+}
+.page-title h1 {
+  margin: 0;
+  color: var(--color-text-neutral);
+}
+.page-title p {
+  margin: var(--spacing-2xs) 0 0;
+}
+
+/* ---------- Tabs: stroke · small · tone="brand" ---------- */
+.tabs {
+  display: flex;
+  gap: var(--spacing-l);
+  border-bottom: var(--border-width-regular) solid var(--color-border-subtle);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab {
+  position: relative;
+  height: 36px;
+  padding: 0 var(--spacing-s);
+  border: 0;
+  background: transparent;
+  color: var(--color-text-neutral);
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: var(--radius-component-set-1) var(--radius-component-set-1) 0 0;
+}
+.tab:hover {
+  background: var(--color-background-neutral-hover);
+}
+.tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: var(--border-width-medium);
+  background: var(--color-border-primary);
+  transform: scaleX(0);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tab[aria-selected="true"] {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium) !important;
+}
+.tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Filter row: Dropdown header="inline" variant="filled" ---------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-l);
+  margin: var(--spacing-2xl) 0 var(--spacing-4xl);
+}
+.dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  height: 36px;
+  padding: 0 var(--spacing-l);
+  background: var(--color-background-neutral);
+  border-radius: var(--radius-component-set-1);
+  border: var(--border-width-regular) solid var(--color-border-subtle);
+}
+.dropdown:focus-within {
+  border-color: var(--color-border-primary);
+}
+.dropdown-label {
+  color: var(--color-text-neutral-muted);
+  white-space: nowrap;
+}
+.dropdown-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--color-border-neutral);
+}
+.dropdown select {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-neutral);
+  padding: 0 22px 0 0;
+  height: 100%;
+  cursor: pointer;
+  font-family: inherit;
+}
+.dropdown select:focus {
+  outline: none;
+}
+.dropdown select:disabled {
+  color: var(--color-text-neutral-disabled);
+  cursor: not-allowed;
+}
+.dropdown select option {
+  background: var(--color-background-neutral);
+  color: var(--color-text-neutral);
+}
+.dropdown-caret {
+  position: absolute;
+  right: var(--spacing-l);
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--color-icons-neutral-subtle);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+.filters-status {
+  margin: 0 0 0 auto;
+}
+
+.notice {
+  padding: var(--spacing-l) var(--spacing-2xl);
+  border-radius: var(--radius-container-set-2);
+  background: var(--color-background-warning-subtle);
+  color: var(--color-text-neutral);
+  border: var(--border-width-regular) solid var(--color-border-warning-subtle);
+}
+
+/* ---------- Panels ---------- */
+.panel {
+  animation: panel-in 0.3s ease both;
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- KpiCard (stacked) ---------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+}
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  min-width: 0;
+  padding: var(--spacing-3xl);
+  border-radius: var(--radius-container-set-2);
+  border: var(--border-width-regular) solid var(--color-border-muted);
+  background: var(--color-background-kpi, var(--color-background-neutral));
+}
+.kpi p {
+  margin: 0;
+}
+.kpi-label {
+  color: var(--color-text-neutral-muted);
+}
+.kpi-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--spacing-l);
+}
+.kpi-value {
+  color: var(--color-text-neutral);
+}
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-3xs);
+  margin-bottom: 4px;
+  padding: var(--spacing-3xs) var(--spacing-xs);
+  border-radius: var(--radius-pill);
+}
+.delta .icon {
+  width: 14px;
+  height: 14px;
+}
+.delta-up {
+  background: var(--color-background-positive-subtle);
+  color: var(--color-text-positive);
+}
+/* A falling average payment is neither good nor bad: neutral chip, never a status colour. */
+.delta-neutral {
+  background: var(--color-background-subtle);
+  color: var(--color-text-neutral-subtle);
+  border: var(--border-width-regular) solid var(--color-border-subtle);
+}
+
+/* ---------- ChartCard ---------- */
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-2xl);
+}
+.span-2 {
+  grid-column: 1 / -1;
+}
+.chart-card,
+.table-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--spacing-2xl);
+  border-radius: var(--radius-container-set-2);
+  border: var(--border-width-regular) solid var(--color-border-subtle);
+  background: var(--color-background-neutral);
+}
+.chart-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-l);
+}
+.chart-card-head h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding-top: var(--spacing-3xs);
+  color: var(--color-text-neutral);
+}
+.chart-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex: none;
+}
+.chart-card-actions {
+  display: flex;
+  gap: var(--spacing-3xs);
+  flex: none;
+}
+.info {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-component-set-1);
+  color: var(--color-icons-neutral-subtle);
+  cursor: help;
+}
+.info:hover,
+.info:focus-visible {
+  background: var(--color-background-neutral-hover);
+}
+.chart-sub {
+  margin: var(--spacing-2xs) 0 0;
+}
+
+/* Legend: line keys mirror line marks; text in text tokens, never series colour */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2xl);
+  margin-top: var(--spacing-l);
+  color: var(--color-text-neutral-subtle);
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+.legend-key {
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+}
+
+.chart {
+  position: relative;
+  margin-top: var(--spacing-l);
+  min-height: 120px;
+}
+.chart svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+  touch-action: pan-y;
+}
+.chart svg:focus-visible {
+  outline: 2px solid var(--color-border-primary);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+.chart.is-refreshing svg {
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+
+/* SVG marks */
+.grid-line {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.baseline {
+  stroke: var(--color-border-neutral);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.ref-line {
+  stroke: var(--chart-ref);
+  stroke-width: 1.5;
+}
+.ref-label {
+  fill: var(--color-text-neutral-muted);
+  font-size: 11px;
+}
+.axis-text {
+  fill: var(--chart-axis);
+  font-size: 12px;
+  font-family: var(--font-family-graphik);
+}
+.series-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.series-area {
+  opacity: 0.1;
+}
+.end-dot {
+  stroke: var(--color-background-neutral);
+  stroke-width: 2;
+}
+.end-label {
+  fill: var(--color-text-neutral);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-graphik);
+  paint-order: stroke;
+  stroke: var(--color-background-neutral);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.crosshair {
+  stroke: var(--color-border-neutral);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.hover-dot {
+  stroke: var(--color-background-neutral);
+  stroke-width: 2;
+}
+.bar {
+  transition: opacity 0.15s ease;
+}
+.bar-hit {
+  fill: transparent;
+  cursor: default;
+}
+.bar-group:hover .bar,
+.bar-group:focus .bar {
+  opacity: 0.8;
+}
+.bar-group:focus {
+  outline: none;
+}
+.bar-group:focus-visible .bar {
+  stroke: var(--color-text-neutral);
+  stroke-width: 1.5;
+}
+.bar-label {
+  fill: var(--color-text-neutral);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-graphik);
+}
+.plot-hit {
+  fill: transparent;
+  cursor: crosshair;
+}
+
+/* Draw-in on first render (skipped under reduced motion) */
+.chart.animate .series-line {
+  stroke-dasharray: var(--len) var(--len);
+  stroke-dashoffset: var(--len);
+  animation: draw 900ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.chart.animate .series-area,
+.chart.animate .end-dot,
+.chart.animate .end-label {
+  opacity: 0;
+  animation: fade-in 0.4s ease 700ms forwards;
+}
+.chart.animate .series-area {
+  animation-name: fade-area;
+}
+.chart.animate .bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+  animation: grow 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 50ms);
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-area {
+  to {
+    opacity: 0.1;
+  }
+}
+@keyframes grow {
+  to {
+    transform: none;
+  }
+}
+
+/* Tooltip: value leads (strong), label follows; line keys */
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  min-width: 140px;
+  padding: var(--spacing-s) var(--spacing-l);
+  border-radius: var(--radius-container-set-2);
+  background: var(--color-background-inverse);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-4);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.tooltip-title {
+  color: var(--color-text-inverse-muted, var(--color-text-inverse));
+  margin-bottom: var(--spacing-2xs);
+}
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+.tooltip-row strong {
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+}
+.tooltip-row span:last-child {
+  color: var(--color-text-inverse-muted, var(--color-text-inverse));
+}
+.tooltip-key {
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+  flex: none;
+}
+
+/* ---------- DataTable + Pagination ---------- */
+.table-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+}
+.table-head h2 {
+  margin: 0;
+}
+.table-head p {
+  margin: var(--spacing-2xs) 0 0;
+}
+.table-scroll {
+  overflow-x: auto;
+  border: var(--border-width-regular) solid var(--color-border-subtle);
+  border-radius: var(--radius-container-set-2);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+.data-table th {
+  position: sticky;
+  top: 0;
+  background: var(--color-background-subtle);
+  color: var(--color-text-neutral-subtle);
+  text-align: right;
+  font-weight: var(--font-weight-medium);
+  padding: 0;
+  border-bottom: var(--border-width-regular) solid var(--color-border-subtle);
+}
+.data-table th:first-child,
+.data-table td:first-child {
+  text-align: left;
+}
+.data-table th button {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: inherit;
+  gap: var(--spacing-2xs);
+  width: 100%;
+  padding: var(--spacing-m) var(--spacing-l);
+  cursor: pointer;
+}
+.data-table th:not(:first-child) button {
+  justify-content: flex-end;
+}
+.data-table th button:hover {
+  color: var(--color-text-neutral);
+  background: var(--color-background-neutral-hover);
+}
+.data-table th button:focus-visible {
+  outline: 2px solid var(--color-border-primary);
+  outline-offset: -2px;
+}
+.sort-icon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.35;
+}
+th[aria-sort="ascending"] .sort-icon,
+th[aria-sort="descending"] .sort-icon {
+  opacity: 1;
+  color: var(--color-icons-primary);
+}
+th[aria-sort="descending"] .sort-icon {
+  transform: rotate(180deg);
+}
+.data-table td {
+  padding: var(--spacing-m) var(--spacing-l);
+  text-align: right;
+  border-bottom: var(--border-width-regular) solid var(--color-border-subtle);
+  color: var(--color-text-neutral);
+  font-variant-numeric: tabular-nums;
+}
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.data-table tbody tr:hover td {
+  background: var(--color-background-neutral-hover);
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  justify-content: flex-end;
+  padding-top: var(--spacing-l);
+  color: var(--color-text-neutral-subtle);
+}
+.rows-per-page {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+.rows-per-page select {
+  height: 32px;
+  padding: 0 var(--spacing-s);
+  border: var(--border-width-regular) solid var(--color-border-subtle);
+  border-radius: var(--radius-component-set-1);
+  background: var(--color-background-neutral);
+  color: var(--color-text-neutral);
+  font: inherit;
+}
+.page-buttons {
+  display: flex;
+  gap: var(--spacing-3xs);
+}
+
+.page-foot {
+  margin-top: var(--spacing-4xl);
+  max-width: 900px;
+  line-height: 1.6;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .topnav {
+    gap: var(--spacing-s);
+  }
+  .topnav-brand span:last-child {
+    display: none;
+  }
+  .topnav-links {
+    margin-left: 0;
+    flex: 1;
+    justify-content: flex-end;
+    overflow-x: auto;
+  }
+  .topnav-links a {
+    padding: var(--spacing-xs) var(--spacing-s);
+  }
+  .widget-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kpi-grid {
+    gap: var(--spacing-l);
+  }
+  .kpi {
+    padding: var(--spacing-2xl);
+  }
+  .filters {
+    gap: var(--spacing-s);
+  }
+  .dropdown {
+    flex: 1 1 100%;
+  }
+  .dropdown select {
+    flex: 1;
+  }
+  .filters-status {
+    margin: 0;
+    flex-basis: 100%;
+  }
+  .table-head {
+    flex-direction: column;
+  }
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+  }
+}
+@media (max-width: 420px) {
+  .kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .chart.animate .series-line,
+  .chart.animate .series-area,
+  .chart.animate .end-dot,
+  .chart.animate .end-label,
+  .chart.animate .bar {
+    animation: none !important;
+    stroke-dasharray: none;
+    opacity: initial;
+    transform: none;
+  }
+  .chart.animate .series-area {
+    opacity: 0.1;
+  }
+  .tab::after,
+  .btn {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .series-line {
+    stroke: CanvasText;
+  }
+  .legend-key,
+  .tooltip-key {
+    background: CanvasText !important;
+  }
+}
+
+/* Row headers (month) in the body: plain cells, not sticky column headers */
+.data-table tbody th { position: static; background: none; text-align: left; font-weight: inherit; color: var(--color-text-neutral); padding: var(--spacing-m) var(--spacing-l); border-bottom: var(--border-width-regular) solid var(--color-border-subtle); }
+.data-table tbody tr:last-child th { border-bottom: 0; }
+.data-table tbody tr:hover th { background: var(--color-background-neutral-hover); }
+
+/* ---------- Dark-mode contrast repairs (tokens stay faithful to Figma; see theme README
+   "Dark-mode contrast"). Dark Text/positive equals Background/positive-subtle (both green-500),
+   and Text/primary (#7745ad) is low-contrast on the dark surfaces. ---------- */
+.theme-nuclios.dark .delta-up { color: var(--color-text-neutral); }
+.theme-nuclios.dark .tab[aria-selected="true"],
+.theme-nuclios.dark .breadcrumb [aria-current="page"],
+.theme-nuclios.dark .btn-border,
+.theme-nuclios.dark th[aria-sort] .sort-icon { color: var(--nuclios-primary-300); }
+.theme-nuclios.dark .btn-border { border-color: var(--nuclios-primary-400); }
+.theme-nuclios.dark .topnav-links a[aria-current="page"] { color: var(--color-text-neutral); }
+
+/* =====================================================================
+   Added: refresh, granularity note, heatmap, grouped/negative bars
+   ===================================================================== */
+
+/* Sequential heatmap ramp (one hue, light→dark), UPI primary steps. Validated with
+   validate_palette.js --ordinal: monotone L, adjacent ΔL ≥ 0.06, light end ≥ 2:1 vs surface.
+   Dark mode is its own selection: low values sit closest to the dark surface. */
+.theme-nuclios {
+  --seq-1: var(--nuclios-primary-300);
+  --seq-2: var(--nuclios-primary-400);
+  --seq-3: var(--nuclios-primary-500);
+  --seq-4: var(--nuclios-primary-700);
+  --seq-5: var(--nuclios-primary-900);
+}
+.theme-nuclios.dark {
+  --seq-1: var(--nuclios-primary-600);
+  --seq-2: var(--nuclios-primary-400);
+  --seq-3: var(--nuclios-primary-300);
+  --seq-4: var(--nuclios-primary-200);
+  --seq-5: var(--nuclios-primary-50);
+}
+
+.page-title { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--spacing-2xl); flex-wrap: wrap; }
+.refresh { display: flex; align-items: center; gap: var(--spacing-l); }
+.refresh .btn { height: 32px; padding: 0 var(--spacing-l); }
+.refresh .btn.is-busy .icon { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.filters-note { margin: calc(-1 * var(--spacing-l)) 0 var(--spacing-2xl); max-width: 900px; }
+.kpi-grid.is-refreshing, .table-card.is-refreshing { opacity: 0.55; transition: opacity 0.15s ease; }
+.chart-empty { margin: var(--spacing-3xl) 0; }
+
+/* Rect keys for bar and cell marks (legend mirrors the mark) */
+.legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.legend-seq { gap: var(--spacing-l); }
+.tooltip-swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+
+/* Bars: the hovered/focused group stays full strength, the rest recede */
+.has-active .bar-group:not(.is-active) .bar { opacity: 0.4; }
+.bar-group .bar { transition: opacity 0.12s ease; }
+
+/* Heatmap cells: 2px surface gap via inset geometry; hover/focus ring in text ink */
+.heat-cell { stroke: transparent; stroke-width: 2; transition: stroke 0.1s ease; }
+.heat-cell.is-active { stroke: var(--color-text-neutral); }
+.heat-empty { fill: var(--color-background-subtle); }
+
+@media (max-width: 760px) {
+  .refresh { width: 100%; justify-content: space-between; }
+  .filters-note { margin-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .refresh .btn.is-busy .icon { animation: none; }
+}
+@media (forced-colors: active) {
+  .heat-cell { forced-color-adjust: none; }
+  .legend-swatch, .tooltip-swatch { forced-color-adjust: none; }
+}
+
+/* Filter row fills the full width: dropdowns share the space, actions keep their size. */
+.filters { flex-wrap: nowrap; }
+.filters .dropdown { flex: 1 1 auto; min-width: 0; }
+.filters .dropdown select { flex: 1; min-width: 0; text-overflow: ellipsis; }
+.filters .btn { flex: none; }
+@media (max-width: 1100px) {
+  .filters { flex-wrap: wrap; }
+  .filters .dropdown { flex: 1 1 calc(33% - var(--spacing-l)); }
+}
+@media (max-width: 760px) {
+  .filters .dropdown { flex: 1 1 100%; }
+}
+
+/* =====================================================================
+   Dark mode — charcoal palette (inspired by the reference dashboard):
+   near-black page, raised charcoal cards with a hairline border and a faint
+   top highlight, soft grey secondary text, tinted chips with matching borders.
+   Remaps semantic tokens for this page only; generated tokens stay untouched.
+   Chart series (#7a8ae5 / #d96a0c) and the heatmap ramp re-validated on #1c1c1c: all PASS.
+   ===================================================================== */
+.theme-nuclios.brand-upi.dark {
+  --charcoal-page: #151515;
+  --charcoal-nav: #161616;
+  --charcoal-card: #1c1c1c;
+  --charcoal-card-top: #202020;
+  --charcoal-raised: #242424;
+  --charcoal-line: #2b2b2b;
+  --charcoal-line-strong: #3a3a3a;
+  --charcoal-highlight: rgba(255, 255, 255, 0.045);
+
+  --color-background-subtle: var(--charcoal-page);
+  --color-background-neutral: var(--charcoal-card);
+  --color-background-kpi: var(--charcoal-card);
+  --color-background-neutral-hover: var(--charcoal-raised);
+  --color-background-neutral-selected: #2a2a2a;
+  --color-background-primary-muted: #262626;
+  --color-border-subtle: var(--charcoal-line);
+  --color-border-muted: var(--charcoal-line);
+  --color-border-neutral: var(--charcoal-line-strong);
+  --color-text-neutral: #f2f2f2;
+  --color-text-neutral-subtle: #c7c7c7;
+  --color-text-neutral-muted: #8c8c8c;
+  --color-icons-neutral-subtle: #9a9a9a;
+  --color-background-inverse: #262626;
+  --color-text-inverse: #f2f2f2;
+  --color-text-inverse-muted: #a3a3a3;
+  --chart-grid: #262626;
+  background: var(--charcoal-page);
+}
+.theme-nuclios.brand-upi.dark body { background: var(--charcoal-page); }
+
+/* Chrome */
+.theme-nuclios.brand-upi.dark .topnav { background: var(--charcoal-nav); border-bottom-color: #222; }
+.theme-nuclios.brand-upi.dark .topnav-links a[aria-current="page"] {
+  background: #262626; color: #f2f2f2;
+  box-shadow: inset 0 0 0 1px var(--charcoal-line-strong), inset 0 1px 0 var(--charcoal-highlight);
+}
+.theme-nuclios.brand-upi.dark .tab[aria-selected="true"] { color: #f2f2f2; }
+
+/* Raised surfaces: hairline border + faint top highlight + very soft vertical gradient */
+.theme-nuclios.brand-upi.dark :is(.kpi, .chart-card, .table-card) {
+  background: linear-gradient(180deg, var(--charcoal-card-top), var(--charcoal-card));
+  border-color: var(--charcoal-line);
+  box-shadow: inset 0 1px 0 var(--charcoal-highlight);
+}
+.theme-nuclios.brand-upi.dark .dropdown,
+.theme-nuclios.brand-upi.dark .rows-per-page select {
+  background: #1f1f1f; border-color: var(--charcoal-line);
+  box-shadow: inset 0 1px 0 var(--charcoal-highlight);
+}
+.theme-nuclios.brand-upi.dark .dropdown:focus-within { border-color: var(--nuclios-primary-400); }
+.theme-nuclios.brand-upi.dark .dropdown select option { background: #1f1f1f; }
+
+/* Buttons: grey "secondary" like the reference's Export; brand blue stays the primary action */
+.theme-nuclios.brand-upi.dark .btn-border {
+  background: #262626; color: #f2f2f2; border-color: var(--charcoal-line-strong);
+  box-shadow: inset 0 1px 0 var(--charcoal-highlight);
+}
+.theme-nuclios.brand-upi.dark .btn-border:hover { background: #2e2e2e; }
+.theme-nuclios.brand-upi.dark .btn-filled { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18); }
+.theme-nuclios.brand-upi.dark .btn-ghost:hover,
+.theme-nuclios.brand-upi.dark .info:hover { background: #262626; }
+
+/* Chips: tinted fill + matching border (reference status pills) */
+.theme-nuclios.brand-upi.dark .delta-up { background: rgba(63, 139, 75, 0.16); border: 1px solid #2f6b3b; color: #8fd99c; }
+.theme-nuclios.brand-upi.dark .delta-neutral { background: #262626; border-color: var(--charcoal-line-strong); color: #c7c7c7; }
+
+/* Table: header blends into the card, rows lift on hover */
+.theme-nuclios.brand-upi.dark .table-scroll { border-color: var(--charcoal-line); }
+.theme-nuclios.brand-upi.dark .data-table thead th { background: var(--charcoal-card); color: #8c8c8c; }
+.theme-nuclios.brand-upi.dark .data-table td,
+.theme-nuclios.brand-upi.dark .data-table tbody th { border-bottom-color: #242424; }
+.theme-nuclios.brand-upi.dark .data-table tbody tr:hover :is(td, th) { background: var(--charcoal-raised); }
+
+/* Charts & overlays */
+.theme-nuclios.brand-upi.dark .series-area { opacity: 0.14; }
+.theme-nuclios.brand-upi.dark .heat-empty { fill: #202020; }
+.theme-nuclios.brand-upi.dark .tooltip { border: 1px solid var(--charcoal-line-strong); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5); }
+.theme-nuclios.brand-upi.dark .notice { background: #262318; border-color: #4a3f1c; }

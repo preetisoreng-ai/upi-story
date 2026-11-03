@@ -1,0 +1,195 @@
+/*
+  Shared top bar for every UPI story page (Original, Pressure tested, Dashboard, Data story).
+  Same markup, same size and position on every page, so switching pages from the
+  version dropdown only changes the content below it.
+
+  Cross-page transition: browsers that support cross-document View Transitions keep the
+  bar fixed in place and cross-fade only the content. Others simply navigate.
+*/
+.topbar {
+  --tb-ink: #171717;
+  --tb-muted: #66645f;
+  --tb-line: #d9d6cf;
+  --tb-brand: #4056d6;
+  --tb-bg: rgba(247, 245, 239, 0.92);
+  --tb-panel: #ffffff;
+  --tb-hover: #f7f5ef;
+  --tb-selected: #e9e6de;
+
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-sizing: border-box;
+  height: 72px;
+  padding: 0 max(24px, calc((100vw - 1180px) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--tb-line);
+  background: var(--tb-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  font-family: Graphik, Inter, Arial, sans-serif;
+  line-height: 1.5;
+  view-transition-name: upi-topbar;
+}
+.topbar *,
+.topbar *::before,
+.topbar *::after {
+  box-sizing: border-box;
+}
+.topbar .wordmark {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--tb-ink);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+}
+.topbar .mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  background: var(--tb-brand);
+  color: #fff;
+  border-radius: 9px;
+  font-weight: 700;
+}
+.topbar nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.topbar nav > a {
+  color: var(--tb-muted);
+  text-decoration: none;
+  font-size: 14px;
+}
+.topbar nav > a:hover {
+  color: var(--tb-brand);
+}
+.topbar a:focus-visible,
+.topbar summary:focus-visible {
+  outline: 2px solid var(--tb-brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Page switcher: the same dropdown on every page; the current page is marked */
+.version-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 40px;
+}
+.version-menu summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--tb-ink);
+  padding: 0;
+  font-size: 14px;
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.5;
+  user-select: none;
+}
+.version-menu summary::-webkit-details-marker {
+  display: none;
+}
+.version-menu-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: currentColor;
+  transition: transform 0.18s ease;
+}
+.version-menu[open] .version-menu-icon {
+  transform: rotate(180deg);
+}
+.version-menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 190px;
+  padding: 6px;
+  background: var(--tb-panel);
+  border: 1px solid var(--tb-line);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  display: grid;
+  gap: 2px;
+  z-index: 50;
+}
+.topbar nav .version-menu-panel a {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--tb-ink);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-align: center;
+  text-decoration: none;
+}
+.topbar nav .version-menu-panel a:hover {
+  background: var(--tb-hover);
+  color: var(--tb-brand);
+}
+.topbar nav .version-menu-panel a.active {
+  background: var(--tb-selected);
+  color: var(--tb-ink);
+}
+
+/* Dark pages (dashboard dark mode, the data story): same bar, dark surfaces */
+.topbar-dark,
+html.dark .topbar {
+  --tb-ink: #f2f2f2;
+  --tb-muted: #a3a3a3;
+  --tb-line: #262626;
+  --tb-brand: #4056d6;
+  --tb-bg: rgba(22, 22, 22, 0.92);
+  --tb-panel: #1c1c1c;
+  --tb-hover: #262626;
+  --tb-selected: #2a2a2a;
+}
+.topbar-dark nav > a:hover,
+html.dark .topbar nav > a:hover,
+.topbar-dark nav .version-menu-panel a:hover,
+html.dark .topbar nav .version-menu-panel a:hover {
+  color: #a2aeee;
+}
+
+@media (max-width: 760px) {
+  .topbar nav > a {
+    display: none;
+  }
+  .version-menu {
+    margin-left: 0;
+  }
+}
+
+/* ---------- Cross-page transition: bar stays, content cross-fades ---------- */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-group(upi-topbar) {
+  animation: none;
+}
+::view-transition-old(upi-topbar),
+::view-transition-new(upi-topbar) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.28s;
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
