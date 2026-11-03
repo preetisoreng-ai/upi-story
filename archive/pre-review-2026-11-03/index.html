@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" class="theme-nuclios">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="An interactive portfolio story about the growth of UPI in India, built from official NPCI monthly totals.">
+  <title>UPI, month by month</title>
+  <link rel="stylesheet" href="../data-viz-theme/tokens/nuclios.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="#top" aria-label="UPI story home"><span class="mark">U</span> UPI story</a>
+    <nav aria-label="Page sections">
+      <a href="#growth">Growth</a><a href="#scale">Scale</a><a href="#editorial-charts">Charts</a><a href="#method">Method</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <p class="eyebrow">Official NPCI data · Apr 2020–Oct 2026</p>
+      <h1>India’s everyday payment rail became <span>25× busier</span> in six years.</h1>
+      <p class="dek">UPI rose from 1 billion monthly transactions to more than 25 billion. The network of live banks grew too—but usage grew five times faster.</p>
+      <a class="scroll-cue" href="#growth">Explore the monthly record <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="stat-band" aria-label="Headline statistics">
+      <div class="wrap stats">
+        <article><p>Monthly transactions</p><strong id="volumeMultiple">25.5×</strong><span>Apr 2020 → Oct 2026</span></article>
+        <article><p>Monthly value</p><strong id="latestValue">₹31.5 lakh cr</strong><span>October 2026</span></article>
+        <article><p>Banks live</p><strong id="latestBanks">758</strong><span>up from 153</span></article>
+      </div>
+    </section>
+
+    <section class="story wrap" id="growth">
+      <div class="section-copy">
+        <p class="eyebrow">01 · The climb</p>
+        <h2>A steep curve became the new normal.</h2>
+        <p>Monthly volume crossed 5 billion in March 2022, 10 billion in August 2023, and 20 billion in August 2025. Short dips remain visible; the long-run direction does not.</p>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div><p class="chart-kicker">National monthly total</p><h3 id="chartTitle">Transaction volume</h3></div>
+          <div class="segmented" role="group" aria-label="Chart metric">
+            <button class="active" data-metric="volume_million">Volume</button>
+            <button data-metric="value_crore">Value</button>
+            <button data-metric="banks_live">Banks</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <svg id="trendChart" role="img" aria-labelledby="chartTitle chartDesc" viewBox="0 0 1000 430" preserveAspectRatio="none"></svg>
+          <p id="chartDesc" class="sr-only">Interactive line chart of UPI monthly totals from April 2020 to October 2026.</p>
+          <div id="tooltip" class="tooltip" hidden></div>
+        </div>
+        <div class="chart-footer"><span>Apr 2020</span><span>Source: NPCI Product Statistics</span><span>Oct 2026</span></div>
+      </div>
+    </section>
+
+    <section class="comparison" id="scale">
+      <div class="wrap comparison-grid">
+        <div class="section-copy light">
+          <p class="eyebrow">02 · Scale</p>
+          <h2>More banks joined. Transactions grew much faster.</h2>
+          <p>The live-bank count rose nearly fivefold. Monthly transactions rose more than twenty-fivefold, pointing to much deeper use across an expanding network.</p>
+        </div>
+        <div class="ratio-card">
+          <div class="ratio-row"><span>Transaction volume</span><strong id="volumeGrowth">+2,448%</strong><div><i id="volumeBar"></i></div></div>
+          <div class="ratio-row"><span>Transaction value</span><strong id="valueGrowth">+1,986%</strong><div><i id="valueBar"></i></div></div>
+          <div class="ratio-row"><span>Banks live</span><strong id="bankGrowth">+395%</strong><div><i id="bankBar"></i></div></div>
+          <p>Change from April 2020 to October 2026</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap recent">
+      <div class="section-copy">
+        <p class="eyebrow">03 · The latest year</p>
+        <h2>Volume is still outpacing value.</h2>
+        <p>In October 2026, transaction count was higher than a year earlier. Value also grew, but more slowly.</p>
+      </div>
+      <div class="delta-grid">
+        <article><span>Volume, year over year</span><strong id="volumeYoy">+23.0%</strong><p>20.7bn → 25.5bn</p></article>
+        <article><span>Value, year over year</span><strong id="valueYoy">+15.6%</strong><p>₹27.3tn → ₹31.5tn</p></article>
+        <article><span>Average transaction</span><strong id="ticketChange">−6.0%</strong><p id="ticketText">₹1,318 → ₹1,238</p></article>
+      </div>
+    </section>
+
+    <section class="editorial-charts" id="editorial-charts">
+      <div class="wrap">
+        <div class="section-copy">
+          <p class="eyebrow">04 · Editorial charts</p>
+          <h2>Three views of UPI's expansion.</h2>
+          <p>Each chart uses the same monthly record from April 2020 through October 2026. Open the SVG for a scalable version or download the high-resolution PNG.</p>
+        </div>
+
+        <div class="editorial-list">
+          <figure class="editorial-figure">
+            <picture><source srcset="outputs/01_upi_monthly_transactions.svg" type="image/svg+xml"><img src="outputs/01_upi_monthly_transactions.png" alt="Monthly UPI transactions rose from 1 billion in April 2020 to 25.5 billion in October 2026." loading="lazy"></picture>
+            <figcaption><span>Monthly transactions</span><span><a class="svg-preview" href="outputs/01_upi_monthly_transactions.svg" data-title="Monthly UPI transactions">View SVG</a><a href="outputs/01_upi_monthly_transactions.png" download>Download PNG</a></span></figcaption>
+          </figure>
+          <figure class="editorial-figure">
+            <picture><source srcset="outputs/02_upi_volume_value_index.svg" type="image/svg+xml"><img src="outputs/02_upi_volume_value_index.png" alt="UPI volume and value indexed to 100 in April 2020 on one shared axis. Volume reached 2547.8 and value reached 2086.1 by October 2026." loading="lazy"></picture>
+            <figcaption><span>Volume and value index</span><span><a class="svg-preview" href="outputs/02_upi_volume_value_index.svg" data-title="UPI volume and value index">View SVG</a><a href="outputs/02_upi_volume_value_index.png" download>Download PNG</a></span></figcaption>
+          </figure>
+          <figure class="editorial-figure">
+            <picture><source srcset="outputs/03_upi_average_transaction_value.svg" type="image/svg+xml"><img src="outputs/03_upi_average_transaction_value.png" alt="Average UPI transaction value declined from 1512 rupees in April 2020 to 1238 rupees in October 2026." loading="lazy"></picture>
+            <figcaption><span>Average transaction value</span><span><a class="svg-preview" href="outputs/03_upi_average_transaction_value.svg" data-title="Average UPI transaction value">View SVG</a><a href="outputs/03_upi_average_transaction_value.png" download>Download PNG</a></span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="method wrap" id="method">
+      <div><p class="eyebrow">Method & source</p><h2>A transparent monthly record.</h2></div>
+      <div class="method-copy">
+        <p>Seven official NPCI financial-year workbooks were combined into one chronological series. Indian comma separators and stray whitespace were normalized. Exact duplicates alone were eligible for removal; none were found.</p>
+        <p>The audit found no missing months, conflicting records, nonnumeric totals, or nonpositive totals. One malformed comma grouping in April 2026 was flagged and retained after separator removal.</p>
+        <div class="links"><a href="data/processed/upi_monthly.csv" download>Download cleaned CSV</a><a href="outputs/data_quality_report.txt">Read data audit</a><a href="analysis/build_upi_monthly.py">View Python pipeline</a></div>
+        <p class="footnote">Source: National Payments Corporation of India (NPCI), UPI Product Statistics. Volume is in millions of transactions; value is in INR crore. NPCI notes that transactions with debit and credit to the same account are excluded from August 2018 onward.</p>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="svg-dialog" id="svgDialog" aria-labelledby="svgDialogTitle">
+    <div class="svg-dialog-bar">
+      <h2 id="svgDialogTitle">Chart preview</h2>
+      <button class="svg-dialog-close" type="button" aria-label="Close chart preview">×</button>
+    </div>
+    <img id="svgDialogImage" src="" alt="">
+  </dialog>
+
+  <footer><div class="wrap"><span>UPI story</span><span>Portfolio data project · 2026</span></div></footer>
+  <script src="app.js"></script>
+</body>
+</html>

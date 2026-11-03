@@ -1,0 +1,32 @@
+NPCI UPI monthly data audit
+===========================
+Raw workbooks: 7 XLSX files plus source_notes.txt
+Sheets: one sheet named Product Statistics in every workbook
+Headers: Month; No. of Banks live on UPI; Volume (In Mn.); Value (In Cr.)
+Units: banks live (count), transaction volume (millions), transaction value (INR crore)
+Raw date format: full English month name and four-digit year (for example, March-2021)
+Raw order: reverse chronological within each financial-year workbook
+Covered period: 2020-04 to 2026-10
+Monthly observations written: 79
+Exact duplicate records removed: 0
+Conflicting months: 0
+Missing months: none
+Nonnumeric values: 0
+Nonpositive totals: 0
+
+Issues and inconsistencies
+--------------------------
+- All workbook cells are stored as text rather than typed dates/numbers.
+- Numeric comma formatting is inconsistent across files. Values generally use Indian grouping; volumes switch between ungrouped and grouped forms.
+- March 2025 and April-June 2025 include trailing tab/whitespace characters in banks and volume cells; these are trimmed.
+- April 2026 value is written as "29,029,88.05", which is malformed Indian grouping. Removing separators yields 2902988.05; the observation is retained and explicitly flagged rather than silently dropped.
+- The source-notes download date and period remain placeholders and should be completed from the actual download record.
+- The workbooks contain no embedded source footnotes. The accompanying source_notes.txt records the exclusion of transactions with debit and credit to the same account from August 2018 onward.
+
+Cleaned-row verification
+------------------------
+- 2020-04: raw 153 | 999.57 | 1,51,140.66 -> 153 | 999.57 | 151140.66
+- 2023-07: raw 473 | 9964.61 | 15,33,536.44 -> 473 | 9964.61 | 1533536.44
+- 2025-03: raw "661\t" | "18,301.51\t" | 24,77,221.61 -> 661 | 18301.51 | 2477221.61
+- 2026-04: raw 713 | 22,346.8 | 29,029,88.05 -> 713 | 22346.8 | 2902988.05 (malformed grouping flagged)
+- 2026-10: raw 758 | 25,466.70 | 31,52,929.46 -> 758 | 25466.70 | 3152929.46

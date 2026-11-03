@@ -1,0 +1,8 @@
+Source: National Payments Corporation of India (NPCI)
+Page: https://www.npci.org.in/product/upi/product-statistics
+Downloaded on: [actual download date]
+Table: UPI national totals
+Period: [first month] to [last month]
+Volume unit: million transactions
+Value unit: INR crore
+Notes: Transactions with debit and credit to the same account are excluded from August 2018 onward. Copy any additional relevant footnotes from the source page when downloading the data.

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" class="theme-nuclios">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="An interactive portfolio story about the growth of UPI in India, built from official NPCI monthly totals.">
+  <title>UPI story — pressure-tested</title>
+  <link rel="stylesheet" href="../data-viz-theme/tokens/nuclios.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="#top" aria-label="UPI story home"><span class="mark">U</span> UPI story</a>
+    <nav aria-label="Page sections">
+      <a href="#growth">Finding</a><a href="#scale">Driver</a><a href="#editorial-charts">Charts</a><a href="#checks">Checks</a><a href="#method">Method</a>
+      <details class="version-menu">
+        <summary><span>Pressure tested</span><svg class="version-menu-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M26.7081 12.7071L16.7081 22.7071C16.6152 22.8001 16.5049 22.8738 16.3835 22.9241C16.2621 22.9745 16.132 23.0004 16.0006 23.0004C15.8691 23.0004 15.739 22.9745 15.6176 22.9241C15.4962 22.8738 15.3859 22.8001 15.2931 22.7071L5.29306 12.7071C5.10542 12.5194 5 12.2649 5 11.9996C5 11.7342 5.10542 11.4797 5.29306 11.2921C5.4807 11.1044 5.73519 10.999 6.00056 10.999C6.26592 10.999 6.52042 11.1044 6.70806 11.2921L16.0006 20.5858L25.2931 11.2921C25.386 11.1992 25.4963 11.1255 25.6177 11.0752C25.7391 11.0249 25.8692 10.999 26.0006 10.999C26.132 10.999 26.2621 11.0249 26.3835 11.0752C26.5048 11.1255 26.6151 11.1992 26.7081 11.2921C26.801 11.385 26.8747 11.4953 26.9249 11.6167C26.9752 11.7381 27.0011 11.8682 27.0011 11.9996C27.0011 12.131 26.9752 12.2611 26.9249 12.3825C26.8747 12.5039 26.801 12.6142 26.7081 12.7071Z"/></svg></summary>
+        <div class="version-menu-panel">
+          <a href="index.html">Original</a>
+          <a class="active" href="pressure-tested.html" aria-current="page">Pressure tested</a>
+        </div>
+      </details>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <p class="eyebrow">Official NPCI data · Apr 2020–Oct 2026</p>
+      <h1>Average UPI payment value <span>fell 18%</span> from 2020.</h1>
+      <p class="dek">The nominal monthly average decreased from ₹1,512 in April 2020 to ₹1,238 in October 2026—₹274 lower per transaction.</p>
+      <a class="scroll-cue" href="#growth">See the evidence <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="stat-band" aria-label="Headline statistics">
+      <div class="wrap stats">
+        <article><p>Average payment value</p><strong>−18.1%</strong><span>Apr 2020 → Oct 2026</span></article>
+        <article><p>Rupee decrease</p><strong>₹274</strong><span>₹1,512 → ₹1,238</span></article>
+        <article><p>Months checked</p><strong>79</strong><span>no missing months</span></article>
+      </div>
+    </section>
+
+    <section class="story wrap" id="growth">
+      <div class="section-copy">
+        <p class="eyebrow">01 · Main finding</p>
+        <h2>The nominal average decreased.</h2>
+        <p>Average payment value equals total value divided by transaction count. The monthly series fluctuates, but its broad direction after 2021 is downward.</p>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div><p class="chart-kicker">National monthly total</p><h3 id="chartTitle">Average payment value</h3></div>
+          <div class="segmented" role="group" aria-label="Chart metric">
+            <button class="active" data-metric="avg_transaction_value_inr">Average</button>
+            <button data-metric="volume_million">Volume</button>
+            <button data-metric="value_crore">Value</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <svg id="trendChart" role="img" aria-labelledby="chartTitle chartDesc" viewBox="0 0 1000 430" preserveAspectRatio="none"></svg>
+          <p id="chartDesc" class="sr-only">Interactive line chart of UPI average payment value and monthly totals from April 2020 to October 2026.</p>
+          <div id="tooltip" class="tooltip" hidden></div>
+        </div>
+        <div class="chart-footer"><span>Apr 2020</span><span>Source: NPCI Product Statistics</span><span>Oct 2026</span></div>
+      </div>
+    </section>
+
+    <section class="comparison" id="scale">
+      <div class="wrap comparison-grid">
+        <div class="section-copy light">
+          <p class="eyebrow">02 · What drives the average</p>
+          <h2>Transaction count grew faster than value.</h2>
+          <p>When count rises faster than total value, the average value per transaction falls. These are aggregate national totals, not evidence about individual behaviour.</p>
+        </div>
+        <div class="ratio-card">
+          <div class="ratio-row"><span>Transaction volume</span><strong id="volumeGrowth">+2,448%</strong><div><i id="volumeBar"></i></div></div>
+          <div class="ratio-row"><span>Transaction value</span><strong id="valueGrowth">+1,986%</strong><div><i id="valueBar"></i></div></div>
+          <div class="ratio-row"><span>Average payment value</span><strong>−18.1%</strong><div><i style="width:18%"></i></div></div>
+          <p>Change from April 2020 to October 2026</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap recent">
+      <div class="section-copy">
+        <p class="eyebrow">03 · Consistency checks</p>
+        <h2>The conclusion is not tied to one date choice.</h2>
+        <p>Every October since 2020 is lower than the previous October. Six reasonable alternative starting months also produce a lower value by October 2026.</p>
+      </div>
+      <div class="delta-grid">
+        <article><span>October 2020</span><strong>₹1,864</strong><p>same-month starting point</p></article>
+        <article><span>October 2023</span><strong>₹1,504</strong><p>continued decline</p></article>
+        <article><span>October 2026</span><strong>₹1,238</strong><p>latest same-month value</p></article>
+      </div>
+    </section>
+
+    <section class="editorial-charts" id="editorial-charts">
+      <div class="wrap">
+        <div class="section-copy">
+          <p class="eyebrow">04 · Supporting charts</p>
+          <h2>Three tests of the finding.</h2>
+          <p>The charts show the full monthly series, the separate growth of count and value, and a same-calendar-month comparison.</p>
+        </div>
+
+        <div class="editorial-list">
+          <figure class="editorial-figure">
+            <picture><source srcset="outputs/01_upi_average_payment_value.svg" type="image/svg+xml"><img src="outputs/01_upi_average_payment_value.png" alt="Average UPI payment value fell from 1512 rupees in April 2020 to 1238 rupees in October 2026." loading="lazy"></picture>
+            <figcaption><span>Average payment value</span><span><a class="svg-preview" href="outputs/01_upi_average_payment_value.svg" data-title="Average UPI payment value">View SVG</a><a href="outputs/01_upi_average_payment_value.png" download>Download PNG</a></span></figcaption>
+          </figure>
+          <figure class="editorial-figure">
+            <picture><source srcset="outputs/02_upi_volume_value_index.svg" type="image/svg+xml"><img src="outputs/02_upi_volume_value_index.png" alt="UPI volume and value indexed to 100 in April 2020 on one shared axis. Volume reached 2547.8 and value reached 2086.1 by October 2026." loading="lazy"></picture>
+            <figcaption><span>Count and value growth</span><span><a class="svg-preview" href="outputs/02_upi_volume_value_index.svg" data-title="UPI count and value growth">View SVG</a><a href="outputs/02_upi_volume_value_index.png" download>Download PNG</a></span></figcaption>
+          </figure>
+          <figure class="editorial-figure">
+            <picture><source srcset="outputs/03_upi_october_average_payment.svg" type="image/svg+xml"><img src="outputs/03_upi_october_average_payment.png" alt="Every October from 2020 through 2026 had a lower average UPI payment value than the prior October." loading="lazy"></picture>
+            <figcaption><span>Same-month comparison</span><span><a class="svg-preview" href="outputs/03_upi_october_average_payment.svg" data-title="October average UPI payment value">View SVG</a><a href="outputs/03_upi_october_average_payment.png" download>Download PNG</a></span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="conclusion wrap" id="conclusion">
+      <div class="section-copy">
+        <p class="eyebrow">05 · What we can conclude</p>
+        <h2>The finding is clear. Its cause is not.</h2>
+      </div>
+      <div class="conclusion-grid">
+        <article><h3>What the data establishes</h3><p>The nominal monthly average was ₹274 lower in October 2026 than in April 2020, an 18.1% decrease. Count grew faster than total value, and the direction holds across alternative dates.</p></article>
+        <article><h3>Possible explanations</h3><p>A changing mix of payment categories, wider merchant acceptance, adoption patterns, or pandemic recovery could affect the series. This dataset cannot test those explanations.</p></article>
+        <article><h3>What it cannot tell us</h3><p>It does not show a median payment, individual behaviour, what people bought, person-to-person versus merchant payments, or an inflation-adjusted result.</p></article>
+      </div>
+    </section>
+
+    <section class="checks" id="checks">
+      <div class="wrap">
+        <div class="section-copy">
+          <p class="eyebrow">06 · Twelve-check review</p>
+          <h2>How the conclusion was pressure-tested.</h2>
+          <p>“Not tested” means the required supporting data is not present locally. It is not treated as evidence.</p>
+        </div>
+        <div class="checks-scroll">
+          <table class="checks-table">
+            <thead><tr><th>Check</th><th>Result</th><th>Effect on conclusion</th></tr></thead>
+            <tbody>
+              <tr><td>1. Calculation</td><td>Verified: value_crore × 10 ÷ volume_million.</td><td>No change</td></tr>
+              <tr><td>2. Data quality</td><td>79 consecutive months; no duplicate month keys, conflicts, or invalid totals. Final-month completeness is not independently confirmed.</td><td>One unresolved caveat</td></tr>
+              <tr><td>3. Size of change</td><td>₹1,512.06 to ₹1,238.06: −₹274.00, or −18.1%.</td><td>Became the headline</td></tr>
+              <tr><td>4. Consistency</td><td>Annual medians decline after 2021; monthly values still fluctuate.</td><td>Supports a broad decline</td></tr>
+              <tr><td>5. Choice of dates</td><td>Six alternative starts and six alternative ends were tested. All end lower, but the Oct 2023 difference is only −0.5%.</td><td>Direction holds; magnitude varies</td></tr>
+              <tr><td>6. Seasonality</td><td>Every October comparison is lower; moving festival dates remain a limitation.</td><td>No change</td></tr>
+              <tr><td>7. Unusual months</td><td>No IQR outliers. Series range: ₹1,216.84 to ₹1,958.48.</td><td>No change</td></tr>
+              <tr><td>8. Growth drivers</td><td>Count +2,447.8%; nominal value +1,986.1%.</td><td>Explains the arithmetic</td></tr>
+              <tr><td>9. Month length</td><td>Monthly activity uses transactions per calendar day. Average payment value needs no day adjustment.</td><td>No change</td></tr>
+              <tr><td>10. Payment mix</td><td>Not tested: no category, P2P/P2M, or size-band data.</td><td>Limits explanation</td></tr>
+              <tr><td>11. Inflation</td><td>Not tested: no local price index. All amounts are nominal INR.</td><td>Limits interpretation</td></tr>
+              <tr><td>12. Conclusion strength</td><td>Aggregate average decreased; causes and individual behaviour are not established.</td><td>Narrowed the wording</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="method wrap" id="method">
+      <div><p class="eyebrow">Method & source</p><h2>A transparent monthly record.</h2></div>
+      <div class="method-copy">
+        <p>Seven official NPCI financial-year workbooks were combined into 79 monthly observations from April 2020 through October 2026. Volume is in millions of transactions; value is in INR crore. Average payment value is value_crore × 10 ÷ volume_million.</p>
+        <p>Indian comma separators and stray whitespace were normalized. No records were silently discarded. One malformed comma grouping in April 2026 was flagged and retained after separator removal.</p>
+        <div class="links"><a href="data/processed/upi_monthly_enriched.csv" download>Download enriched CSV</a><a href="outputs/pressure_test_report.md">Read 12-check report</a><a href="analysis/review_story.mjs">View review script</a></div>
+        <p class="footnote">Source: National Payments Corporation of India (NPCI), UPI Product Statistics. Covered period: Apr 2020–Oct 2026. Amounts are nominal INR, not inflation-adjusted. Download date: unknown because the local source note still contains a placeholder. NPCI notes that transactions with debit and credit to the same account are excluded from August 2018 onward.</p>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="svg-dialog" id="svgDialog" aria-labelledby="svgDialogTitle">
+    <div class="svg-dialog-bar">
+      <h2 id="svgDialogTitle">Chart preview</h2>
+      <button class="svg-dialog-close" type="button" aria-label="Close chart preview">×</button>
+    </div>
+    <img id="svgDialogImage" src="" alt="">
+  </dialog>
+
+  <footer><div class="wrap"><span>UPI story</span><span>Portfolio data project · 2026</span></div></footer>
+  <script src="app.js"></script>
+</body>
+</html>
