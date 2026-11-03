@@ -1,5 +1,5 @@
 /*
-  UPI dashboard — NucliOS / Bento V2.0 tokens only (../data-viz-theme/tokens/nuclios.css),
+  UPI dashboard — NucliOS / Bento V2.0 tokens only (theme/nuclios.css, a copy of ../data-viz-theme/tokens/nuclios.css),
   UPI brand mode (html.brand-upi: story blue, lime accent, warm paper neutrals).
   Plain-HTML mirrors of the NucliOS components (TopNav, Breadcrumb, Tabs tone="brand",
   Dropdown header="inline" variant="filled", Button, KpiCard, ChartCard, DataTable, Pagination)

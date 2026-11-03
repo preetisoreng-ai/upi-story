@@ -9,6 +9,12 @@ Use these folders as follows:
 
 All visualizations and UI artifacts in this project must follow the workspace guidance in `../data-viz-theme/README.md`.
 
+`theme/nuclios.css` is a copy of the generated `../data-viz-theme/tokens/nuclios.css` so the site works on GitHub Pages (the theme folder lives outside this repo). Do not edit it; after rebuilding the theme tokens, copy the file over again:
+
+```text
+cp ../data-viz-theme/tokens/nuclios.css theme/nuclios.css
+```
+
 ## Rebuild the data
 
 From this project directory, run:
