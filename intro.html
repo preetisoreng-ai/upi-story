@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en" class="theme-data brand-upi dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>UPI story intro</title>
+    <meta
+      name="description"
+      content="A 40-second intro to the UPI data story: 79 months of NPCI data, from 1 billion payments a month to 822 million a day."
+    />
+    <!-- Link previews on Instagram, X and LinkedIn -->
+    <meta property="og:type" content="video.other" />
+    <meta property="og:title" content="UPI payment boom: the data story in 40 seconds" />
+    <meta
+      property="og:description"
+      content="From 1 billion UPI payments a month in April 2020 to 822 million a day in October 2026. Official NPCI data."
+    />
+    <meta property="og:url" content="https://preetisoreng-ai.github.io/upi-story/intro.html" />
+    <meta
+      property="og:image"
+      content="https://preetisoreng-ai.github.io/upi-story/upi-intro-poster-16x9.jpg"
+    />
+    <meta
+      property="og:video"
+      content="https://preetisoreng-ai.github.io/upi-story/upi-intro-desktop-16x9.mp4"
+    />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="og:video:width" content="1920" />
+    <meta property="og:video:height" content="1080" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:image"
+      content="https://preetisoreng-ai.github.io/upi-story/upi-intro-poster-16x9.jpg"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="theme/data.css" />
+    <link rel="stylesheet" href="topbar.css" />
+    <style>
+      :root {
+        --ink: #000;
+        --paper: #fff;
+        --lav: #8c7cff;
+        --lime: #c6e48b;
+        --muted: #9a9a9a;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--ink);
+        color: var(--paper);
+        color-scheme: dark;
+        font-family: "Archivo", Graphik, Inter, Arial, sans-serif;
+      }
+      main {
+        box-sizing: border-box;
+        min-height: calc(100svh - 72px);
+        padding: 32px 16px 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+      }
+      .player {
+        width: min(100%, 1180px);
+        aspect-ratio: 16 / 9;
+        background: #000;
+        border: 1px solid #1d1d1d;
+      }
+      .player video {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      /* Phones (and any portrait screen) get the vertical cut, sized to the screen */
+      @media (max-width: 767px), (orientation: portrait) {
+        .player {
+          aspect-ratio: 9 / 16;
+          width: min(100%, calc((100svh - 200px) * 9 / 16));
+        }
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 24px;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 650;
+      }
+      .cta a {
+        color: var(--lime);
+        text-underline-offset: 0.2em;
+      }
+      .cta a:focus-visible {
+        outline: 2px solid var(--lav);
+        outline-offset: 3px;
+      }
+      .source {
+        color: var(--muted);
+        font-size: 14px;
+        text-align: center;
+        max-width: 60ch;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar topbar-dark">
+      <a class="wordmark" href="index.html" aria-label="UPI story home"
+        ><span class="mark" aria-hidden="true">U</span> UPI story</a
+      >
+    </header>
+    <main>
+      <div class="player">
+        <!-- The source is picked by device below; the desktop cut is the no-JS fallback. -->
+        <video
+          id="intro"
+          controls
+          playsinline
+          preload="metadata"
+          poster="upi-intro-poster-16x9.jpg"
+          aria-label="UPI story intro video, 40 seconds"
+        >
+          <source src="upi-intro-desktop-16x9.mp4" type="video/mp4" />
+        </video>
+      </div>
+      <p class="cta">
+        <a href="index.html">Explore the full data story</a>
+        <a href="upistory-dashboard.html">Open the dashboard</a>
+      </p>
+      <p class="source">
+        Source: National Payments Corporation of India (NPCI), UPI Product Statistics, Apr 2020 –
+        Oct 2026.
+      </p>
+    </main>
+    <script>
+      // Serve the cut that fits the viewer's screen: 9:16 on phones / portrait, 16:9 on desktop.
+      (function () {
+        var v = document.getElementById("intro");
+        var mq = matchMedia("(max-width: 767px), (orientation: portrait)");
+        function pick() {
+          var mobile = mq.matches;
+          var src = mobile ? "upi-intro-mobile-9x16.mp4" : "upi-intro-desktop-16x9.mp4";
+          if (v.currentSrc && v.currentSrc.indexOf(src) !== -1) return;
+          var t = v.currentTime || 0;
+          var playing = !v.paused;
+          v.poster = mobile ? "upi-intro-poster-9x16.jpg" : "upi-intro-poster-16x9.jpg";
+          v.src = src;
+          v.currentTime = t;
+          if (playing) v.play();
+        }
+        pick();
+        if (mq.addEventListener) mq.addEventListener("change", pick);
+      })();
+    </script>
+  </body>
+</html>
