@@ -1,0 +1,402 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    #stage-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #stage-svg text {
+      font-family: "Archivo", Inter, sans-serif;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    @font-face {
+      font-family: "Archivo";
+      src: url("assets/fonts/archivo-latin.woff2") format("woff2");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+      unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+        U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Archivo";
+      src: url("assets/fonts/archivo-latin-ext.woff2") format("woff2");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+      unicode-range: U+0100-02BA, U+20A0-20AB, U+20AD-20C4;
+    }
+  </style>
+  <div data-hf-id="hf-h0mv" id="root" data-composition-id="stage" data-width="1920" data-height="1080">
+    <!-- One shape carries the whole film: radial → bars → dots → disc → line → radial -->
+    <svg data-hf-id="hf-5mse" id="stage-svg" data-layout-allow-overflow>
+      <g data-hf-id="hf-ttzh" id="stage-cam">
+        <circle data-hf-id="hf-awrs" id="stage-ring" fill="none" stroke="#2a2a2a" stroke-width="1.5" />
+        <circle data-hf-id="hf-idfx" id="stage-hub" fill="none" stroke="#2a2a2a" stroke-width="1.5" />
+        <line data-hf-id="hf-q7cj" id="stage-axis" stroke="#2a2a2a" stroke-width="1.5" />
+        <circle data-hf-id="hf-iih3" id="stage-disc" fill="#ffffff" />
+        <circle data-hf-id="hf-a59o" id="stage-first" fill="#c6e48b" />
+        <circle data-hf-id="hf-ifxl" id="stage-last" fill="#8c7cff" />
+        <g data-hf-id="hf-3n76" id="stage-marks"></g>
+        <path data-hf-id="hf-urf1"
+          id="stage-line"
+          fill="none"
+          stroke="#8c7cff"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <g data-hf-id="hf-wdk7" id="stage-pts"></g>
+        <g data-hf-id="hf-vurz" id="stage-notes"></g>
+      </g>
+    </svg>
+  </div>
+  <script>
+    (function () {
+      const NS = "http://www.w3.org/2000/svg";
+      // canvas size: the first element declaring one is the film root
+      const vpm = document.querySelector("[data-width][data-height]");
+      const vp = [
+        0,
+        +(vpm ? vpm.getAttribute("data-width") : innerWidth),
+        +(vpm ? vpm.getAttribute("data-height") : innerHeight),
+      ];
+      const W = +vp[1],
+        H = +vp[2];
+      const L = window.UPI_LAYOUT(W, H);
+      const D = window.UPI;
+      const N = 100,
+        n = D.length; // 79 months + 21 spare marks for the 100-dot grid
+      const svg = document.getElementById("stage-svg");
+      svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+      const $ = (id) => document.getElementById(id);
+      const set = (node, a) => {
+        for (const k in a) node.setAttribute(k, a[k]);
+      };
+      const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const eo = (t) => 1 - Math.pow(1 - t, 3);
+      const eio = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      const LAV = [140, 124, 255],
+        LIME = [198, 228, 139];
+      const mix = (t) => LAV.map((c, i) => lerp(c, LIME[i], t));
+      const rgb = (c) => `rgb(${c.map(Math.round).join(",")})`;
+
+      const S = L.shape,
+        P = L.plot;
+      const r0 = S.R * 0.2;
+      set($("stage-ring"), { cx: S.cx, cy: S.cy, r: S.R });
+      set($("stage-hub"), { cx: S.cx, cy: S.cy, r: r0 - 8 });
+      set($("stage-axis"), {
+        x1: P.x0 - 10,
+        x2: P.x1 + 10,
+        y1: P.base + 1,
+        y2: P.base + 1,
+        opacity: 0,
+      });
+
+      const marks = [];
+      for (let i = 0; i < N; i++) {
+        const r = document.createElementNS(NS, "rect");
+        $("stage-marks").append(r);
+        marks.push(r);
+      }
+
+      /* ---- states: each returns {x, y, w, h, rot, rx, c:[r,g,b], o} per mark (x,y = centre) ---- */
+      const hidden = (x, y, c) => ({ x, y, w: 0, h: 0, rot: 0, rx: 0, c, o: 0 });
+
+      function radial(values, g, tint) {
+        const max = Math.max(...values),
+          step = 360 / n;
+        const reach = g * (n + 6);
+        return marks.map((_, i) => {
+          if (i >= n) return hidden(S.cx, S.cy, mix(1));
+          const t = eo(clamp((reach - i) / 6));
+          const len = (S.R - r0) * Math.sqrt(values[i] / max) * t;
+          const a = -90 + (i + 0.5) * step;
+          const rm = r0 + len / 2,
+            rad = (a * Math.PI) / 180;
+          const w = Math.max(1, ((2 * Math.PI * (r0 + len * 0.55)) / n) * 0.82);
+          return {
+            x: S.cx + rm * Math.cos(rad),
+            y: S.cy + rm * Math.sin(rad),
+            w,
+            h: Math.max(0, len),
+            rot: a + 90,
+            rx: 0,
+            c: mix(tint === undefined ? i / (n - 1) : tint),
+            o: t > 0 ? 1 : 0,
+          };
+        });
+      }
+      function bars() {
+        const max = Math.max(...D.map((d) => d.v));
+        const bw = (P.x1 - P.x0) / n;
+        return marks.map((_, i) => {
+          if (i >= n) return hidden(P.x1, P.base, mix(1));
+          const h = (P.base - P.top) * (D[i].v / max);
+          const a = -90 + (i + 0.5) * (360 / n) + 90;
+          return {
+            x: P.x0 + bw * (i + 0.5),
+            y: P.base - h / 2,
+            w: bw * 0.72,
+            h,
+            rot: a > 180 ? 360 : 0,
+            rx: 0,
+            c: mix(i / (n - 1)),
+            o: 1,
+          };
+        });
+      }
+      const sidePx = S.R * 1.78,
+        cell = sidePx / 10;
+      function dots() {
+        return marks.map((_, i) => {
+          const row = Math.floor(i / 10),
+            col = i % 10;
+          const d = cell * 0.82;
+          return {
+            x: S.cx - sidePx / 2 + cell * (col + 0.5),
+            y: S.cy - sidePx / 2 + cell * (row + 0.5),
+            w: d,
+            h: d,
+            rot: 360 * (i < n && bars()[i].rot === 360 ? 1 : 0),
+            rx: d / 2,
+            c: row < 8 ? LAV : LIME,
+            o: 1,
+          };
+        });
+      }
+      function gather() {
+        return marks.map((_, i) => {
+          const a = i * 2.39996,
+            rr = Math.sqrt((i + 0.5) / N) * S.R * 0.8;
+          return {
+            x: S.cx + rr * Math.cos(a),
+            y: S.cy + rr * Math.sin(a),
+            w: 6,
+            h: 6,
+            rot: 360 * (i < n && bars()[i].rot === 360 ? 1 : 0),
+            rx: 3,
+            c: [255, 255, 255],
+            o: 0,
+          };
+        });
+      }
+      const B = bars(),
+        DT = dots(),
+        G = gather();
+      const daily = D.map((d) => d.d);
+
+      /* ---- the October line (average payment) ---- */
+      const octs = D.filter((d) => d.m.endsWith("-10"));
+      const lo = Math.min(...octs.map((d) => d.a)),
+        hi = Math.max(...octs.map((d) => d.a));
+      const lx = (i) => P.x0 + 30 + (i * (P.x1 - P.x0 - 60)) / (octs.length - 1);
+      const ly = (v) => P.top + 60 + ((hi - v) / (hi - lo)) * (P.base - P.top - 120);
+      const LP = octs.map((d, i) => [lx(i), ly(d.a)]);
+      const pts = LP.map(([x, y]) => {
+        const c = document.createElementNS(NS, "circle");
+        set(c, { cx: x, cy: y, r: 9, fill: "#8c7cff" });
+        $("stage-pts").append(c);
+        return c;
+      });
+      const fs = Math.round(Math.min(W, H) * 0.032);
+      const note = (x, y, txt, fill, anchor) => {
+        const t = document.createElementNS(NS, "text");
+        set(t, { x, y, fill, "font-size": fs, "text-anchor": anchor || "middle" });
+        t.textContent = txt;
+        $("stage-notes").append(t);
+        return t;
+      };
+      const yr = (m) => "’" + m.slice(2, 4);
+      const nFirst = note(LP[0][0], LP[0][1] - 26, "₹1,864", "#ffffff");
+      const nLast = note(LP[6][0], LP[6][1] - 26, "₹1,238", "#c6e48b");
+      const nY0 = note(LP[0][0], P.base + fs * 1.4, "Oct " + yr(octs[0].m), "#9a9a9a");
+      const nY6 = note(LP[6][0], P.base + fs * 1.4, "Oct " + yr(octs[6].m), "#9a9a9a");
+      const bw = (P.x1 - P.x0) / n;
+      const nB0 = note(P.x0, P.base + fs * 1.4, "Apr 2020", "#9a9a9a", "start");
+      const nB1 = note(P.x1, P.base + fs * 1.4, "Oct 2026", "#9a9a9a", "end");
+      const nBv1 = note(
+        P.x0 + bw * 0.5,
+        P.base - (P.base - P.top) * (D[0].v / Math.max(...D.map((d) => d.v))) - 18,
+        "1.0 bn",
+        "#8c7cff",
+        "start"
+      );
+      const nBv2 = note(P.x1, P.top - 18, "25.5 bn", "#c6e48b", "end");
+      nBv1.remove(); // the copy already says 1.0 bn; the label crowded the first bars
+      const notesBars = [nB0, nB1, nBv2],
+        notesLine = [nFirst, nLast, nY0, nY6];
+      const seg = LP.slice(1).map((p, i) => Math.hypot(p[0] - LP[i][0], p[1] - LP[i][1]));
+      const total = seg.reduce((a, b) => a + b, 0);
+
+      /* ---- the morph state the timeline drives ---- */
+      const st = {
+        g: 0.32,
+        k1: 0,
+        k2: 0,
+        k3: 0,
+        g2: 0,
+        k5: 0,
+        ring: 1,
+        barsNote: 0,
+        disc: 0,
+        first: 0,
+        last: 0,
+        lastR: 1,
+        line: 0,
+        lineOut: 0,
+        cam: 0,
+      };
+      const stag = (k, i, s) => eio(clamp(k * (1 + s) - (s * i) / N));
+      const cr = L.screenRadial;
+      const camS = cr.R / S.R,
+        camX = cr.cx - S.cx * camS,
+        camY = cr.cy - S.cy * camS;
+
+      function draw() {
+        const R1 = radial(
+          D.map((d) => d.v),
+          st.g
+        );
+        const R2 = radial(daily, st.g2);
+        marks.forEach((m, i) => {
+          let s = R1[i];
+          const blend = (a, b, k) => ({
+            x: lerp(a.x, b.x, k),
+            y: lerp(a.y, b.y, k),
+            w: lerp(a.w, b.w, k),
+            h: lerp(a.h, b.h, k),
+            rot: lerp(a.rot, b.rot, k),
+            rx: lerp(a.rx, b.rx, k),
+            c: a.c.map((v, j) => lerp(v, b.c[j], k)),
+            o: lerp(a.o, b.o, k),
+          });
+          if (st.k1) s = blend(s, B[i], stag(st.k1, i, 0.6));
+          if (st.k2) s = blend(s, DT[i], stag(st.k2, (i * 37) % N, 0.5));
+          if (st.k3) s = blend(s, G[i], stag(st.k3, N - 1 - i, 0.5));
+          if (st.k5) s = R2[i];
+          if (s.o <= 0.001 || s.w <= 0.01 || s.h <= 0.01) {
+            m.setAttribute("opacity", 0);
+            return;
+          }
+          set(m, {
+            x: (-s.w / 2).toFixed(2),
+            y: (-s.h / 2).toFixed(2),
+            width: s.w.toFixed(2),
+            height: s.h.toFixed(2),
+            rx: Math.min(s.rx, s.w / 2).toFixed(2),
+            transform: `translate(${s.x.toFixed(2)} ${s.y.toFixed(2)}) rotate(${s.rot.toFixed(2)})`,
+            fill: rgb(s.c),
+            opacity: s.o.toFixed(3),
+          });
+        });
+        $("stage-ring").setAttribute("opacity", st.ring);
+        $("stage-hub").setAttribute("opacity", st.ring);
+        $("stage-axis").setAttribute(
+          "opacity",
+          Math.max(st.barsNote, st.line > 0 ? 1 - st.lineOut : 0)
+        );
+        notesBars.forEach((t) => t.setAttribute("opacity", st.barsNote));
+        set($("stage-disc"), {
+          cx: S.cx,
+          cy: S.cy,
+          r: S.R * 0.98 * (0.6 + 0.4 * st.disc),
+          opacity: st.disc,
+        });
+        const rd = S.R * 0.98;
+        const rf = rd * Math.sqrt(0.0255),
+          rl = rd * Math.sqrt(0.3112);
+        set($("stage-first"), {
+          cx: S.cx - rd * 0.52,
+          cy: S.cy - rd * 0.5,
+          r: rf * st.first,
+          opacity: st.first > 0 ? 1 : 0,
+        });
+        // last-12-months circle: sits in the disc, then shrinks into the line's first point
+        const lk = 1 - st.lastR;
+        const lcx = lerp(S.cx + rd * 0.28, LP[0][0], lk),
+          lcy = lerp(S.cy + rd * 0.26, LP[0][1], lk);
+        set($("stage-last"), {
+          cx: lcx,
+          cy: lcy,
+          r: lerp(rl, 9, lk) * st.last,
+          opacity: st.last > 0 ? 1 : 0,
+        });
+        // line draws point by point
+        let len = st.line * total,
+          d = `M${LP[0][0]},${LP[0][1]}`;
+        for (let i = 0; i < seg.length; i++) {
+          if (len <= 0) break;
+          const f = Math.min(1, len / seg[i]);
+          d += ` L${lerp(LP[i][0], LP[i + 1][0], f).toFixed(1)},${lerp(LP[i][1], LP[i + 1][1], f).toFixed(1)}`;
+          len -= seg[i];
+        }
+        const lo2 = 1 - st.lineOut;
+        set($("stage-line"), { d: st.line > 0 ? d : "", opacity: lo2 });
+        let acc = 0;
+        pts.forEach((p, i) => {
+          const on = i === 0 ? st.line > 0 : st.line * total >= acc - 0.5;
+          if (i > 0) acc += 0;
+          p.setAttribute("opacity", on ? lo2 : 0);
+          if (i < seg.length) acc += seg[i];
+        });
+        // recompute visibility with cumulative lengths
+        let cum = 0;
+        pts.forEach((p, i) => {
+          if (i > 0) cum += seg[i - 1];
+          p.setAttribute("opacity", st.line > 0 && st.line * total >= cum - 0.5 ? lo2 : 0);
+        });
+        nFirst.setAttribute("opacity", st.line > 0 ? lo2 : 0);
+        nY0.setAttribute("opacity", st.line > 0 ? lo2 : 0);
+        const endOn = st.line >= 0.999 ? lo2 : 0;
+        nLast.setAttribute("opacity", endOn);
+        nY6.setAttribute("opacity", endOn);
+        const k = eio(st.cam);
+        $("stage-cam").setAttribute(
+          "transform",
+          `translate(${lerp(0, camX, k).toFixed(2)} ${lerp(0, camY, k).toFixed(2)}) scale(${lerp(1, camS, k).toFixed(4)})`
+        );
+      }
+
+      const tl = gsap.timeline({ paused: true, onUpdate: draw });
+      const T = (vars, dur, at, ease) =>
+        tl.to(st, { ...vars, duration: dur, ease: ease || "none" }, at);
+      // 1 · hook: spokes already bursting at frame 0, finish the bloom
+      T({ g: 1 }, 2.4, 0, "power2.out");
+      // 2 · growth: spokes unroll into one bar per month
+      T({ k1: 1 }, 1.5, 5.3);
+      T({ ring: 0 }, 0.6, 5.3);
+      T({ barsNote: 1 }, 0.3, 6.9);
+      // 3 · banks: bars break into 100 dots
+      T({ barsNote: 0 }, 0.2, 11.2);
+      T({ k2: 1 }, 1.4, 11.3);
+      // 4 · share: dots gather into the white disc, then the two shares appear
+      T({ k3: 1 }, 1.0, 16.9);
+      T({ disc: 1 }, 0.5, 17.5, "power3.out");
+      T({ first: 1 }, 0.45, 18.3, "back.out(1.6)");
+      T({ last: 1 }, 0.6, 20.0, "back.out(1.4)");
+      // 5 · average payment: disc clears, the lavender circle shrinks into the first point; line falls
+      T({ disc: 0, first: 0 }, 0.4, 22.9);
+      T({ lastR: 0 }, 0.7, 22.9, "power3.inOut");
+      T({ line: 1 }, 2.2, 23.7, "power1.inOut");
+      // 6 · daily: the line clears, spokes regrow as payments per day
+      T({ lineOut: 1, last: 0 }, 0.35, 28.9);
+      tl.set(st, { k5: 1 }, 29.2);
+      T({ g2: 1 }, 2.0, 29.2, "power2.out");
+      T({ ring: 1 }, 0.6, 29.4);
+      // 7 · hand-off: the radial flies into the laptop screen of the end card
+      T({ cam: 1 }, 1.1, 34.4);
+      tl.set({}, {}, 35.6);
+      draw();
+      window.__timelines["stage"] = tl;
+    })();
+  </script>
+</template>

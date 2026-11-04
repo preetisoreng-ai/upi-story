@@ -1,0 +1,38 @@
+India's UPI went from 1 billion payments a month in April 2020 to 822 million payments a day in October 2026.
+
+I turned 79 months of official NPCI data into a data story. The 40-second version:
+• Monthly transactions grew 25.5×
+• 80% of the 758 banks on UPI today joined after April 2020
+• 31% of all UPI payments since April 2020 happened in the last 12 months
+• The average October payment fell 34%, from ₹1,864 to ₹1,238 (nominal)
+
+Watch the intro on any device: https://preetisoreng-ai.github.io/upi-story/intro.html
+
+About this project
+The UPI story is an independent data-visualisation project built entirely from public data: the National Payments Corporation of India (NPCI) monthly UPI product statistics, April 2020 to October 2026. Every number can be reproduced from the published source.
+
+How it was made
+I built it with my own approval-gated AI framework. A public dataset goes in; four reviewed artifacts come out, and a person approves each stage before the next one starts. The intro video and these posts come out of the same workflow.
+
+① Public dataset in: NPCI monthly UPI statistics
+   ↓ profile + context
+② Original analysis: strongest defensible story
+   ↓ human review + approval
+③ Pressure-tested deep-dive: checks claims, limits
+   ↓ human review + approval
+④ Dashboard: validated measures only
+   ↓ human review + approval
+⑤ Data story web app: shared theme, live on GitHub
+   ↓ final approval
+⑥ Intro video + /post-social: right format per platform
+
+Time to build this level of work
+Before AI: 2 weeks
+With AI tools: 20 hrs
+With the AI framework: 2 hrs
+(Times depend on the quantity and quality of the data; these are for a dataset like this one: 79 months of clean, official NPCI totals.)
+
+Website: https://preetisoreng.com
+Live web app: https://preetisoreng-ai.github.io/upi-story/
+
+#DataVisualization #UPI #Fintech #DigitalPayments #DataStorytelling

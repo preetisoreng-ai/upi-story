@@ -1,0 +1,235 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Archivo";
+      src: url("assets/fonts/archivo-latin.woff2") format("woff2");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+    }
+    @font-face {
+      font-family: "Newsreader";
+      src: url("assets/fonts/newsreader.woff2") format("woff2");
+      font-weight: 400 600;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      container-type: size;
+      color: #fff;
+      font-family: "Archivo", Inter, sans-serif;
+      --lav: #8c7cff;
+      --lime: #c6e48b;
+    }
+    #root .device {
+      position: absolute;
+      background: #161616;
+      border: 2px solid #2a2a2a;
+      overflow: hidden;
+    }
+    #root .device img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    #end-laptop {
+      border-radius: 14px;
+    }
+    #end-base {
+      position: absolute;
+      height: 14px;
+      background: #2a2a2a;
+      border-radius: 0 0 14px 14px;
+    }
+    #end-phone {
+      border-radius: 30px;
+      border-width: 6px !important;
+      border-color: #2a2a2a !important;
+    }
+    #root .end-copy {
+      position: absolute;
+      left: 7.3cqw;
+      top: 50cqh;
+      width: 34cqw;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 3cqh;
+    }
+    #root .mark-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      font-size: 6.4cqh;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    #root .mark {
+      width: 1.35em;
+      height: 1.35em;
+      border-radius: 0.28em;
+      background: #4056d6;
+      display: grid;
+      place-items: center;
+      font-size: 0.8em;
+      font-weight: 800;
+    }
+    #root .cta {
+      font-size: 3.8cqh;
+      font-weight: 650;
+      line-height: 1.2;
+      margin: 0;
+    }
+    #root .url {
+      font-size: 3cqh;
+      font-weight: 600;
+      color: var(--lime);
+      margin: 0;
+    }
+    #root .src {
+      font-family: "Newsreader", Georgia, serif;
+      font-size: 2.7cqh;
+      color: #9a9a9a;
+      line-height: 1.35;
+      margin: 0;
+    }
+    @container (aspect-ratio < 0.8) {
+      #root .end-copy {
+        left: 8.3cqw;
+        width: 83.4cqw;
+        top: 11cqh;
+        transform: none;
+        gap: 1.6cqh;
+      }
+      #root .mark-row {
+        font-size: 10cqw;
+      }
+      #root .cta {
+        font-size: 6cqw;
+      }
+      #root .url {
+        font-size: 4.6cqw;
+      }
+      #root .src {
+        font-size: 3.4cqw;
+      }
+    }
+    @container (0.8 <= aspect-ratio <= 1.3) {
+      #root .end-copy {
+        left: 8.3cqw;
+        width: 83.4cqw;
+        top: 5.5cqh;
+        transform: none;
+        gap: 1.2cqh;
+      }
+      #root .mark-row {
+        font-size: 6.6cqw;
+      }
+      #root .cta {
+        font-size: 4cqw;
+      }
+      #root .url {
+        font-size: 3.2cqw;
+      }
+      #root .src {
+        display: none;
+      }
+    }
+  </style>
+  <div data-hf-id="hf-32ii" id="root" data-composition-id="endcard" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-ov2o" id="end-laptop" class="device">
+      <img data-hf-id="hf-fp9y" id="end-desk" src="assets/site/story-desktop.png" alt="" />
+    </div>
+    <div data-hf-id="hf-40iq" id="end-base"></div>
+    <div data-hf-id="hf-yqwo" id="end-phone" class="device">
+      <img data-hf-id="hf-2g2r" id="end-mob" src="assets/site/story-mobile.png" alt="" />
+    </div>
+    <div data-hf-id="hf-4fwy" id="end-copy" class="end-copy">
+      <p data-hf-id="hf-ihse" id="end-mark" class="mark-row"><span data-hf-id="hf-p489" class="mark">U</span><span data-hf-id="hf-q2aq">UPI story</span></p>
+      <p data-hf-id="hf-1w0o" id="end-cta" class="cta" data-var-text="cta">Explore the full data story</p>
+      <p data-hf-id="hf-xwgj" id="end-url" class="url" data-var-text="url">preetisoreng-ai.github.io/upi-story</p>
+      <p data-hf-id="hf-pdwg" id="end-src" class="src">Source: NPCI UPI Product Statistics, Apr 2020 – Oct 2026</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      // canvas size: the first element declaring one is the film root
+      const vpm = document.querySelector("[data-width][data-height]");
+      const vp = [
+        0,
+        +(vpm ? vpm.getAttribute("data-width") : innerWidth),
+        +(vpm ? vpm.getAttribute("data-height") : innerHeight),
+      ];
+      const L = window.UPI_LAYOUT(+vp[1], +vp[2]);
+      const px = (n) => n + "px";
+      const place = (id, r) =>
+        Object.assign(document.getElementById(id).style, {
+          left: px(r.x),
+          top: px(r.y),
+          width: px(r.w),
+          height: px(r.h),
+        });
+      place("end-laptop", L.laptop);
+      place("end-base", {
+        x: L.laptop.x - L.laptop.w * 0.06,
+        y: L.laptop.y + L.laptop.h,
+        w: L.laptop.w * 1.12,
+        h: 14,
+      });
+      place("end-phone", L.phone);
+
+      const tl = gsap.timeline({ paused: true });
+      // the stage radial lands on the screen's radial (stage cam ends at 1.1s); the screen builds around it
+      tl.fromTo(
+        "#end-laptop",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.35, ease: "power2.out" },
+        0.9
+      );
+      tl.fromTo(
+        "#end-base",
+        { opacity: 0, scaleX: 0.6 },
+        { opacity: 1, scaleX: 1, duration: 0.4, ease: "power3.out" },
+        1.0
+      );
+      tl.fromTo(
+        "#end-phone",
+        { opacity: 0, x: 140 },
+        { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" },
+        1.4
+      );
+      tl.fromTo(
+        "#end-mob",
+        { y: 0 },
+        { y: -0.18 * L.phone.h, duration: 2.4, ease: "power1.inOut" },
+        2.2
+      );
+      // the mark is carried in, then the call to action types on
+      tl.fromTo(
+        "#end-mark",
+        { opacity: 0, x: -50 },
+        { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" },
+        1.2
+      );
+      tl.fromTo(
+        "#end-cta",
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.55, ease: "power3.out" },
+        1.8
+      );
+      tl.fromTo(
+        "#end-url",
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power2.out" },
+        2.3
+      );
+      tl.fromTo("#end-src", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 2.8);
+      tl.set({}, {}, 5.6);
+      window.__timelines["endcard"] = tl;
+    })();
+  </script>
+</template>

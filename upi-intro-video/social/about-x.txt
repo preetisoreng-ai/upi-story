@@ -1,0 +1,2 @@
+Made with public data + my AI framework (analysis → pressure test → dashboard → data story), human sign-off at every step. Build time: 2 weeks before AI, 20 hrs with AI tools, 2 hrs with the framework, depending on the data.
+preetisoreng.com · preetisoreng-ai.github.io/upi-story/

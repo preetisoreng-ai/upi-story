@@ -1,0 +1,146 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Archivo";
+      src: url("assets/fonts/archivo-latin.woff2") format("woff2");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+        U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+        U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Archivo";
+      src: url("assets/fonts/archivo-latin-ext.woff2") format("woff2");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+      unicode-range: U+0100-02BA, U+20A0-20AB, U+20AD-20C4;
+    }
+    @font-face {
+      font-family: "Newsreader";
+      src: url("assets/fonts/newsreader.woff2") format("woff2");
+      font-weight: 400 600;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      container-type: size;
+      color: #fff;
+      font-family: "Archivo", Inter, sans-serif;
+      --lav: #8c7cff;
+      --lime: #c6e48b;
+      --muted: #9a9a9a;
+    }
+    #root .copy {
+      position: absolute;
+      left: 7.3cqw;
+      top: 50cqh;
+      width: 36cqw;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 2.2cqh;
+    }
+    #root .big {
+      font-weight: 850;
+      font-stretch: 108%;
+      font-size: 19cqh;
+      line-height: 0.88;
+      letter-spacing: -0.035em;
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+    }
+    #root .label {
+      font-size: 3.7cqh;
+      font-weight: 550;
+      line-height: 1.2;
+      margin: 0;
+    }
+    #root .note {
+      color: var(--muted);
+      font-size: 2.7cqh;
+      line-height: 1.4;
+      margin: 0;
+    }
+    #root .caps {
+      text-transform: uppercase;
+      font-weight: 850;
+      font-stretch: 112%;
+      font-size: 4.6cqh;
+      line-height: 1;
+      margin: 0;
+    }
+    #root .lav { color: var(--lav); }
+    #root .lime { color: var(--lime); }
+    #root .place {
+      color: var(--lav);
+      text-decoration: underline;
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.16em;
+    }
+    @container (aspect-ratio < 0.8) {
+      #root .copy { left: 8.3cqw; width: 83.4cqw; top: 11.5cqh; transform: none; gap: 1.3cqh; }
+      #root .big { font-size: 24cqw; }
+      #root .label { font-size: 5.4cqw; }
+      #root .note { font-size: 3.6cqw; }
+      #root .caps { font-size: 6.6cqw; }
+    }
+    @container (0.8 <= aspect-ratio <= 1.3) {
+      #root .copy { left: 8.3cqw; width: 83.4cqw; top: 6.5cqh; transform: none; gap: 1.4cqh; }
+      #root .big { font-size: 13cqw; }
+      #root .label { font-size: 3.8cqw; }
+      #root .note { font-size: 2.9cqw; }
+      #root .caps { font-size: 4.8cqw; }
+    }
+
+    #root .display {
+      font-weight: 850; font-stretch: 112%; font-size: 10.4cqh; line-height: 0.9;
+      letter-spacing: -0.015em; text-transform: uppercase; margin: 0;
+    }
+    #root .display > span {
+      white-space: nowrap; display: block; }
+    #root .o {
+      display: inline-block; width: 0.72em; height: 0.72em; margin: 0 0.03em; border-radius: 50%;
+      vertical-align: -0.03em; background: conic-gradient(from 200deg, var(--lime), var(--lav), var(--lime));
+    }
+    #root .kicker { font-size: 3.6cqh; font-weight: 600; margin: 0; }
+    #root .lede { font-size: 3.4cqh; font-weight: 650; margin: 0; font-variant-numeric: tabular-nums; }
+    @container (aspect-ratio < 0.8) {
+      #root .display { font-size: 12.4cqw; } #root .kicker { font-size: 5.4cqw; } #root .lede { font-size: 5cqw; }
+    }
+    @container (0.8 <= aspect-ratio <= 1.3) {
+      #root .display { font-size: 8.6cqw; } #root .kicker { font-size: 4cqw; } #root .lede { font-size: 3.8cqw; }
+      #root .display > span { display: inline; }
+    }
+  </style>
+  <div data-hf-id="hf-ktv8" id="root" data-composition-id="hook" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-s2dq" id="hook-copy" class="copy">
+      <p data-hf-id="hf-43yv" id="hook-kicker" class="kicker"><span data-hf-id="hf-ao2b" class="place" data-var-text="kicker">India</span></p>
+      <h1 data-hf-id="hf-6ivm" id="hook-title" class="display">
+        <span data-hf-id="hf-0zwj" id="hook-l1">UPI</span> <span data-hf-id="hf-4pmk" id="hook-l2">Payment</span>
+        <span data-hf-id="hf-nf67" id="hook-l3">B<span data-hf-id="hf-nqpr" id="hook-o" class="o"></span>om</span>
+      </h1>
+      <p data-hf-id="hf-3m3i" id="hook-lede" class="lede"><span data-hf-id="hf-llrg">79 months</span> · <span data-hf-id="hf-gm7n" id="hook-total">876.6</span> billion payments</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const fmt = (v, d) => v.toLocaleString("en-IN", { minimumFractionDigits: d, maximumFractionDigits: d });
+      const countUp = (sel, from, to, d, at, dur, pre, post) => {
+        const node = document.querySelector(sel), o = { v: from };
+        const paint = () => { const v = o.v; node.textContent = (pre || "") + (v < 0 ? "−" : "") + fmt(Math.abs(v), d) + (post || ""); };
+        paint();
+        tl.to(o, { v: to, duration: dur, ease: "power2.out", onUpdate: paint }, at);
+      };
+      tl.fromTo("#hook-l2", { opacity: 0, scale: 1.3, transformOrigin: "0% 60%" }, { opacity: 1, scale: 1, duration: 0.22, ease: "power4.out" }, 0.25);
+      tl.fromTo("#hook-l3", { opacity: 0, scale: 1.3, transformOrigin: "0% 60%" }, { opacity: 1, scale: 1, duration: 0.22, ease: "power4.out" }, 0.55);
+      tl.fromTo("#hook-o", { rotation: -180 }, { rotation: 0, duration: 1.2, ease: "power3.out" }, 0.55);
+      tl.fromTo("#hook-lede", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power3.out" }, 1.1);
+      countUp("#hook-total", 0, 876.6, 1, 1.1, 1.5);
+      tl.to("#hook-copy", { opacity: 0, duration: 0.25, ease: "power2.in" }, 5);
+      tl.set({}, {}, 5.3);
+      window.__timelines["hook"] = tl;
+    })();
+  </script>
+</template>

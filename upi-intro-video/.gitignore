@@ -1,0 +1,9 @@
+# Regenerated: node tools/make-variants.mjs
+variants/
+# HyperFrames caches and snapshots
+.hyperframes/
+.media/
+.thumbnails/
+.waveform-cache/
+# Raw website capture (the screenshots used are in assets/site/)
+capture/

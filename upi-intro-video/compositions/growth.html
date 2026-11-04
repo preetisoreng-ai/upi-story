@@ -1,0 +1,169 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Archivo";
+      src: url("assets/fonts/archivo-latin.woff2") format("woff2");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+      unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+        U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Archivo";
+      src: url("assets/fonts/archivo-latin-ext.woff2") format("woff2");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+      unicode-range: U+0100-02BA, U+20A0-20AB, U+20AD-20C4;
+    }
+    @font-face {
+      font-family: "Newsreader";
+      src: url("assets/fonts/newsreader.woff2") format("woff2");
+      font-weight: 400 600;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      container-type: size;
+      color: #fff;
+      font-family: "Archivo", Inter, sans-serif;
+      --lav: #8c7cff;
+      --lime: #c6e48b;
+      --muted: #9a9a9a;
+    }
+    #root .copy {
+      position: absolute;
+      left: 7.3cqw;
+      top: 50cqh;
+      width: 36cqw;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 2.2cqh;
+    }
+    #root .big {
+      font-weight: 850;
+      font-stretch: 108%;
+      font-size: 19cqh;
+      line-height: 0.88;
+      letter-spacing: -0.035em;
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+    }
+    #root .label {
+      font-size: 3.7cqh;
+      font-weight: 550;
+      line-height: 1.2;
+      margin: 0;
+    }
+    #root .note {
+      color: var(--muted);
+      font-size: 2.7cqh;
+      line-height: 1.4;
+      margin: 0;
+    }
+    #root .caps {
+      text-transform: uppercase;
+      font-weight: 850;
+      font-stretch: 112%;
+      font-size: 4.6cqh;
+      line-height: 1;
+      margin: 0;
+    }
+    #root .lav {
+      color: var(--lav);
+    }
+    #root .lime {
+      color: var(--lime);
+    }
+    #root .place {
+      color: var(--lav);
+      text-decoration: underline;
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.16em;
+    }
+    @container (aspect-ratio < 0.8) {
+      #root .copy {
+        left: 8.3cqw;
+        width: 83.4cqw;
+        top: 11.5cqh;
+        transform: none;
+        gap: 1.3cqh;
+      }
+      #root .big {
+        font-size: 24cqw;
+      }
+      #root .label {
+        font-size: 5.4cqw;
+      }
+      #root .note {
+        font-size: 3.6cqw;
+      }
+      #root .caps {
+        font-size: 6.6cqw;
+      }
+    }
+    @container (0.8 <= aspect-ratio <= 1.3) {
+      #root .copy {
+        left: 8.3cqw;
+        width: 83.4cqw;
+        top: 6.5cqh;
+        transform: none;
+        gap: 1.4cqh;
+      }
+      #root .big {
+        font-size: 13cqw;
+      }
+      #root .label {
+        font-size: 3.8cqw;
+      }
+      #root .note {
+        font-size: 2.9cqw;
+      }
+      #root .caps {
+        font-size: 4.8cqw;
+      }
+    }
+  </style>
+  <div data-hf-id="hf-wo7s" id="root" data-composition-id="growth" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-zbxi" id="growth-copy" class="copy">
+      <p data-hf-id="hf-s3bb" id="growth-label" class="label">Monthly UPI transactions</p>
+      <p data-hf-id="hf-8277" id="growth-num" class="big lime">25.5×</p>
+      <p data-hf-id="hf-w0qz" id="growth-note" class="note">1.0 bn in Apr 2020 → 25.5 bn in Oct 2026</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const fmt = (v, d) =>
+        v.toLocaleString("en-IN", { minimumFractionDigits: d, maximumFractionDigits: d });
+      const countUp = (sel, from, to, d, at, dur, pre, post) => {
+        const node = document.querySelector(sel),
+          o = { v: from };
+        const paint = () => {
+          const v = o.v;
+          node.textContent = (pre || "") + (v < 0 ? "−" : "") + fmt(Math.abs(v), d) + (post || "");
+        };
+        paint();
+        tl.to(o, { v: to, duration: dur, ease: "power2.out", onUpdate: paint }, at);
+      };
+      tl.fromTo(
+        "#growth-label",
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" },
+        0.2
+      );
+      tl.fromTo("#growth-num", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 1.3);
+      countUp("#growth-num", 1, 25.5, 1, 1.3, 1.6, "", "×");
+      tl.fromTo(
+        "#growth-note",
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power3.out" },
+        2.6
+      );
+      tl.to("#growth-copy", { opacity: 0, duration: 0.25, ease: "power2.in" }, 5.6);
+      tl.set({}, {}, 5.9);
+      window.__timelines["growth"] = tl;
+    })();
+  </script>
+</template>

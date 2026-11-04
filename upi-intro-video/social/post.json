@@ -1,0 +1,104 @@
+{
+  "title": "UPI story intro (40 s)",
+  "landing_page": "https://preetisoreng-ai.github.io/upi-story/intro.html",
+  "landing_page_note": "Device-aware page: plays the 9:16 cut on phones and the 16:9 cut on desktop. Every post points here.",
+  "platforms": {
+    "instagram": {
+      "type": "carousel",
+      "media": [
+        "../renders/upi-intro-4x5-instagram-feed.mp4",
+        "about-flowchart.png"
+      ],
+      "caption_file": "caption-instagram.txt",
+      "link_note": "Instagram captions do not make links clickable: point to the link in bio.",
+      "hashtags": "#UPI #DataVisualization #DataStory #Fintech #DigitalPayments #India #NPCI"
+    },
+    "linkedin": {
+      "type": "post",
+      "media": [
+        "../renders/upi-intro-1x1-linkedin-x-feed.mp4"
+      ],
+      "first_comment_media": [
+        "about-flowchart.png"
+      ],
+      "caption_file": "caption-linkedin.txt",
+      "note": "LinkedIn cannot mix a video and an image in one post: the flowchart goes in the first comment.",
+      "hashtags": "#DataVisualization #UPI #Fintech #DigitalPayments #DataStorytelling"
+    },
+    "x": {
+      "type": "post",
+      "media": [
+        "../../upi-intro-desktop-16x9.mp4",
+        "about-flowchart.png"
+      ],
+      "caption_file": "caption-x.txt",
+      "reply_file": "about-x.txt",
+      "max_chars": 280,
+      "note": "If the X composer refuses a video + image mix, attach the flowchart to the about reply instead."
+    }
+  },
+  "about": {
+    "project": "The UPI story",
+    "brief": "an independent data-visualisation project",
+    "public_data": "the National Payments Corporation of India (NPCI) monthly UPI product statistics, April 2020 to October 2026",
+    "method": "I built it with my own approval-gated AI framework. A public dataset goes in; four reviewed artifacts come out, and a person approves each stage before the next one starts. The intro video and these posts come out of the same workflow.",
+    "website": "https://preetisoreng.com",
+    "live_app": "https://preetisoreng-ai.github.io/upi-story/",
+    "flowchart_title": "From public data\nto published story",
+    "flowchart_subtitle": "The approval-gated AI framework behind the UPI story",
+    "steps": [
+      {
+        "name": "Public dataset in",
+        "note": "NPCI monthly UPI statistics",
+        "gate_after": "Profile + context"
+      },
+      {
+        "name": "Original analysis",
+        "note": "strongest defensible story",
+        "gate_after": "Human review + approval",
+        "short": "analysis"
+      },
+      {
+        "name": "Pressure-tested deep-dive",
+        "note": "checks claims, limits",
+        "gate_after": "Human review + approval",
+        "short": "pressure test"
+      },
+      {
+        "name": "Dashboard",
+        "note": "validated measures only",
+        "gate_after": "Human review + approval",
+        "short": "dashboard"
+      },
+      {
+        "name": "Data story web app",
+        "note": "shared theme, live on GitHub",
+        "gate_after": "Final approval",
+        "short": "data story"
+      },
+      {
+        "name": "Intro video + /post-social",
+        "note": "right format per platform"
+      }
+    ],
+    "times": [
+      {
+        "label": "Before AI",
+        "value": "2 weeks",
+        "hours": 80
+      },
+      {
+        "label": "With AI tools",
+        "value": "20 hrs",
+        "hours": 20
+      },
+      {
+        "label": "With the AI framework",
+        "value": "2 hrs",
+        "hours": 2
+      }
+    ],
+    "times_note": "Times depend on the quantity and quality of the data; these are for a dataset like this one: 79 months of clean, official NPCI totals.",
+    "image_note": "Bars assume 2 weeks ≈ 80 working hours; the 2-hour bar is widened so its label fits."
+  }
+}

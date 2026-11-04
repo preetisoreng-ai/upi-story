@@ -1,0 +1,5 @@
+India's UPI: from 1 billion payments a month (Apr 2020) to 822 million a day (Oct 2026). 79 months of NPCI data in 40 seconds.
+
+Full data story: https://preetisoreng-ai.github.io/upi-story/intro.html
+
+#UPI #DataViz

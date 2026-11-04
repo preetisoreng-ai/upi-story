@@ -1,0 +1,9 @@
+India's UPI went from 1 billion payments a month in April 2020 to 822 million payments a day in October 2026.
+
+I turned 79 months of official NPCI data into a data story. The 40-second version:
+• Monthly transactions grew 25.5×
+• 80% of the 758 banks on UPI today joined after April 2020
+• 31% of all UPI payments since April 2020 happened in the last 12 months
+• The average October payment fell 34%, from ₹1,864 to ₹1,238 (nominal)
+
+Watch the intro on any device: https://preetisoreng-ai.github.io/upi-story/intro.html
